@@ -10,19 +10,19 @@
     "lint": "biome check --write src/"
   },
   "dependencies": {
-    "fumadocs-core": "15.6.1",
-    "fumadocs-mdx": "11.6.10",
+    "fumadocs-core": "15.6.5",
+    "fumadocs-mdx": "11.7.0",
     "fumadocs-typescript": "^4.0.6",
-    "fumadocs-ui": "15.6.1",
-    "next": "15.3.4",
+    "fumadocs-ui": "15.6.5",
+    "next": "15.4.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.0.6",
+    "@biomejs/biome": "2.1.2",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/mdx": "^2.0.13",
-    "@types/node": "24.0.10",
+    "@types/node": "24.0.15",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "postcss": "^8.5.6",
