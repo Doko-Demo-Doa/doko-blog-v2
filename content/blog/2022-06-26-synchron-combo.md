@@ -1,8 +1,8 @@
 ---
 title: Synchron combo - Yu-Gi-Oh Master Duel
-authors: [doko]
+description: Combo guide (in text) for Synchron deck (YGO Master Duel)
+authors: Kuon
 image: /img/yugioh/shooting-majestic-star-dragon.png
-tags: [gaming, english, yugioh, synchron]
 ---
 
 ![dama](/img/yugioh/shooting-majestic-star-dragon.png)
