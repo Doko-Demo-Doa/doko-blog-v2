@@ -4,42 +4,54 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { blog } from "@/lib/source";
 
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}) {
+  const params = await props.params;
+  const page = blog.getPage([params.slug]);
+
+  if (!page) notFound();
+
+  return {
+    title: page.data.title,
+    description: page.data.description,
+  };
+}
+
 export default async function page(props: {
-	params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>;
 }): Promise<React.ReactElement> {
-	const params = await props.params;
-	const page = blog.getPage([params.slug]);
+  const params = await props.params;
+  const page = blog.getPage([params.slug]);
 
-	if (!page) notFound();
-	return (
-		<>
-			<div className="container pt-8 md:px-8">
-				<Link href="/blog" className="border px-4 py-2 rounded">
-					Back
-				</Link>
-				<h1 className="my-2 text-3xl font-bold">{page.data.title}</h1>
-				<p className="mb-4">{page.data.description}</p>
-			</div>
+  if (!page) notFound();
+  const Mdx = page.data.body;
 
-			<article className="container flex flex-col px-0 py-8 lg:flex-row lg:px-4">
-				<div className="prose min-w-0 flex-1 p-4">
-					<InlineTOC items={page.data.toc} />
-
-					<page.data.body components={defaultMdxComponents} />
-				</div>
-				<div className="flex flex-col gap-4 border-l p-4 text-sm lg:w-[250px]">
-					<div>
-						<p className="mb-1 text-fd-muted-foreground">Written by</p>
-						<p className="font-medium">{page.data.author}</p>
-					</div>
-					<div>
-						<p className="mb-1 text-sm text-fd-muted-foreground">At</p>
-						<p className="font-medium">
-							{new Date(page.data.date ?? page.file.name).toDateString()}
-						</p>
-					</div>
-				</div>
-			</article>
-		</>
-	);
+  return (
+    <>
+      <div className="container rounded-xl border py-12 md:px-8">
+        <h1 className="mb-2 text-3xl font-bold">{page.data.title}</h1>
+        <p className="mb-4 text-fd-muted-foreground">{page.data.description}</p>
+        <Link href="/blog">Back</Link>
+      </div>
+      <article className="container flex flex-col px-4 py-8">
+        <div className="prose min-w-0">
+          <InlineTOC items={page.data.toc} />
+          <Mdx components={defaultMdxComponents} />
+        </div>
+        <div className="flex flex-col gap-4 text-sm">
+          <div>
+            <p className="mb-1 text-fd-muted-foreground">Written by</p>
+            <p className="font-medium">{page.data.author}</p>
+          </div>
+          <div>
+            <p className="mb-1 text-sm text-fd-muted-foreground">At</p>
+            <p className="font-medium">
+              {new Date(page.data.date).toDateString()}
+            </p>
+          </div>
+        </div>
+      </article>
+    </>
+  );
 }
