@@ -15,6 +15,12 @@ export default function HomePage() {
       <h1 className="mb-4 border-b-4 border-fd-foreground pb-2 text-4xl font-bold md:text-5xl">
         {"Doko's Blog"}
       </h1>
+
+      <p className="p-4">
+        Below are latest blog posts. For technical stuff, check out the docs in
+        the menu above.
+      </p>
+
       <div className="border">
         {posts.map((post) => (
           <Link
