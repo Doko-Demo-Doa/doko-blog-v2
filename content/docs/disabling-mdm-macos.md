@@ -1,9 +1,11 @@
 ---
-title: Disable MDM on Mac OS Big Sur
+title: Disable MDM on Mac OS
 author: Kuon
 date: 2025-01-20
-tags: [english, tips, mac, big-sur]
+tags: [english, tips, mac]
 ---
+
+Note: This is applicable to Big Sur and newer.
 
 There are several ways to disable MDM on Mac OS. If you don't know what they are, you can do a quick search on Google.
 
