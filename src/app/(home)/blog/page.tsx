@@ -28,7 +28,7 @@ export default function BlogPage() {
             </p>
 
             <p className="mt-auto pt-4 text-xs text-fd-muted-foreground">
-              {new Date(post.data.date ?? post.file.name).toDateString()}
+              {new Date(post.data.date ?? post.path).toDateString()}
             </p>
           </Link>
         ))}

@@ -1,19 +1,38 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { blog } from "@/lib/source";
+
+export const metadata: Metadata = {
+  title: "Doko's Blog",
+  description: "Something, something",
+};
 
 export default function HomePage() {
+  const posts = blog.getPages();
+
   return (
-    <main className="flex flex-1 flex-col justify-center text-center">
-      <h1 className="mb-4 text-2xl font-bold">Hello World</h1>
-      <p className="text-fd-muted-foreground">
-        You can open{" "}
-        <Link
-          href="/docs"
-          className="text-fd-foreground font-semibold underline"
-        >
-          /docs
-        </Link>{" "}
-        and see the documentation.
-      </p>
+    <main className="container max-sm:px-0 md:py-12">
+      <h1 className="mb-4 border-b-4 border-fd-foreground pb-2 text-4xl font-bold md:text-5xl">
+        {"Doko's Blog"}
+      </h1>
+      <div className="border">
+        {posts.map((post) => (
+          <Link
+            key={post.url}
+            href={post.url}
+            className="flex flex-col bg-fd-card p-4 transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground"
+          >
+            <p className="font-medium">{post.data.title}</p>
+            <p className="text-sm text-fd-muted-foreground">
+              {post.data.description}
+            </p>
+
+            <p className="mt-auto pt-4 text-xs text-fd-muted-foreground">
+              {new Date(post.data.date ?? post.file.name).toDateString()}
+            </p>
+          </Link>
+        ))}
+      </div>
     </main>
   );
 }
