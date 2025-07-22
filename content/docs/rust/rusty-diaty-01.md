@@ -1,5 +1,5 @@
 ---
-title: Rusty Diary (01)
+title: (VN) Rusty Diary (01)
 author: Kuon
 tags: [vietnamese, rust]
 ---

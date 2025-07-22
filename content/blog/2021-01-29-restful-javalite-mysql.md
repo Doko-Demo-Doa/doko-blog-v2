@@ -1,5 +1,5 @@
 ---
-title: RESTful với JavaLite và MySQL / SQLite
+title: (VN) RESTful với JavaLite và MySQL / SQLite
 description: JavaLite and MySQL getting started
 author: Kuon
 date: 2021-01-29

@@ -1,5 +1,5 @@
 ---
-title: Hướng dẫn rip đĩa CD sang FLAC bằng Exact Audio Copy
+title: (VN) Hướng dẫn rip đĩa CD sang FLAC bằng Exact Audio Copy
 description: This is just example of the blog post
 date: 2024-12-25
 image: /img/audio-cd-guide/eac_eac_menu.png
