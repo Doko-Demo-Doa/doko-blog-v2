@@ -50,6 +50,16 @@ export default async function page(props: {
               {new Date(page.data.date).toDateString()}
             </p>
           </div>
+
+          <div>
+            <p className="mb-1 text-sm text-fd-muted-foreground">Tags</p>
+
+            {page.data.tags.map((tag) => (
+              <span key={tag} className="mr-2">
+                #{tag}
+              </span>
+            ))}
+          </div>
         </div>
       </article>
     </>

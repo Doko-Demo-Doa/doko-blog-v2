@@ -19,6 +19,7 @@ export const blog = defineCollections({
       description: z.string(),
       author: z.string(),
       date: z.date(),
+      tags: z.array(z.string()),
     });
   },
 });

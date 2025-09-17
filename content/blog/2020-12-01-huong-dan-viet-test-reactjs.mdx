@@ -61,13 +61,11 @@ Trên trang chính sẽ có 1 form, form này chỉ có một field để điề
 
 Sau khi điền tên, app sẽ call API để lấy số lượng top post trên subreddit đã điền.
 
-Repo code đầy đủ nằm ở [đây](https://git.acaziasoft.com/acazia/beginners-guide-to-testing-react). Các bạn có thể clone về để xem cùng bài hướng dẫn này.
-
 ## Chúng ta nên test gì?
 
 Câu hỏi đầu tiên đặt ra là: Cái gì phải test ở đây? Thử lấy cái form làm ví dụ, code sẽ có dạng như này:
 
-```jsx
+```tsx
 function Form({ onSearch }) {
   const [subreddit, setSubreddit] = useState("javascript");
 
@@ -272,7 +270,7 @@ describe("Header", () => {
 
 Chạy test bằng lệnh npm run test hoặc yarn test, chúng ta sẽ thấy:
 
-![debug](https://i.ibb.co/sKbCt1y/image.png)
+![debug](/img/react-testing/testing-debug.png)
 
 OK, dễ thấy là header đang chứa vài link trong đó, bao gồm cả phần "How it works". Giờ chung ta sẽ tìm hiểu cách để _truy nhập_ và _tương tác_ với nó.
 
@@ -362,7 +360,7 @@ Một trong những cách để test là kiểm tra url. Cách này khả thi nh
 
 Điều người dùng quan tâm là thấy được trang cần xem. Và trên trình duyệt thì nó trông như thế này:
 
-![link navigation](https://i.ibb.co/Bw77Xg1/react-testing-intro-link.gif)
+![link navigation](/img/react-testing/react-testing-intro-link.gif)
 
 Sau khi click vào link thì mong muốn là thấy một trang có chữ "How it works".
 
@@ -413,7 +411,7 @@ Các bạn có thể coi 2 cái link trên như bài tập để viết tiếp p
 
 Chúng ta đã test xong link trên header. Mọi thứ đang bắt đầu phức tạp hơn, và đối tượng tiếp theo là cái form nhập text. Nếu bạn đã quên thì trông nó như này:
 
-<img src="https://i.ibb.co/nj4wWzz/react-testing-intro-form-1.gif" alt="" />
+<img src="/img/react-testing/react-testing-intro-form-1.gif" alt="" />
 
 Như đã nói ở trên, chúng ta sẽ cần test các trường hợp:
 
@@ -465,7 +463,7 @@ Bước đầu tiên trong 3 bước mô tả ở trên là "Người dùng nh�
 
 Trước khi truy cập vào <code>input</code>, chúng ta thử dùng <code>screen.debug()</code> để xem phần app được render ra sao.
 
-<img src="https://i.ibb.co/rfsz8sC/3-debug-form.png" alt="" />
+<img src="/img/react-testing/3-debug-form.png" alt="" />
 
 Dễ thấy là label cho ô input tên của subreddit bắt đầu với <code>r /</code>. Quay trở lại danh sách query, ta sẽ thấy <code>getByLabelText</code> là cách ổn nhất để tìm form input đó.
 
@@ -492,11 +490,11 @@ screen.debug();
 
 Ta sẽ đặt thêm một hàm debug nữa ở phía dưới để xem trạng thái hiện giờ của app. Và đầu ra là như này:
 
-<img src="https://i.ibb.co/xCr3BVL/4-debug-loading.png" alt="" />
+<img src="/img/react-testing/4-debug-loading.png" alt="" />
 
 Ở phía dưới, ta có thể thấy chữ "Is loading". Đó chính là hành vi mà ta mong đợi sau khi click nút Submit.
 
-<img src="https://i.ibb.co/nj4wWzz/react-testing-intro-form-1.gif" alt="" />
+<img src="/img/react-testing/react-testing-intro-form-1.gif" alt="" />
 
 ## Truy cập phần tử không có ARIA role
 
@@ -548,7 +546,7 @@ Vì hàm <strong>findByText</strong> là hàm bất đồng bộ, ta sẽ phải
 
 Đầu ra sẽ như sau:
 
-<img src="https://i.ibb.co/fNGMVmg/5-debug-number-of-top-posts.png" alt="" />
+<img src="/img/react-testing/5-debug-number-of-top-posts.png" alt="" />
 
 Ngon! Data trả về đã được render ra. Chúng ta đã xong hết 3 bước phía trên:
 
@@ -605,7 +603,7 @@ Nếu chạy thử lúc này thì test sẽ fail. Vì chúng ta chưa chỉ cho 
 
 Để tạo mock response, ta dùng đến Chrome dev tools để kiểm tra, submit thử form và copy cái response đó:
 
-<img src="https://i.ibb.co/php4VBQ/6-copy-response.png" alt="" />
+<img src="/img/react-testing/6-copy-response.png" alt="" />
 
 Tiếp đến, chúng ta cho cái response đó vào một file, ví dụ <code>src/**mocks**/subreddit-reactjs-response.json</code>.
 
