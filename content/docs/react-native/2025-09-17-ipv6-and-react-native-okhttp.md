@@ -165,6 +165,6 @@ implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
 implementation("com.squareup.okhttp3:okhttp-urlconnection:5.1.0")
 ```
 
-Do you still need this? It depends on who you are targeting. Many countries in UAE have problems with [resolving DNS from Cloudflare](https://github.com/facebook/react-native/issues/32730), and this trick can help in such cases.
+Do you still need this? It depends on who you are targeting. Many countries in UAE have problems with [resolving DNS from Cloudflare](https://github.com/facebook/react-native/issues/32730), and this trick can help in such cases. It also doesn't decrease network performance of your app.
 
 Thanks to Square for the great library, and to my brain at that time, for not being stuck all the time.
