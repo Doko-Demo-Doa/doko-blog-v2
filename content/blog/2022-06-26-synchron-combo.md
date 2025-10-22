@@ -2,6 +2,7 @@
 title: Synchron combo - Yu-Gi-Oh Master Duel
 description: Combo guide (in text) for Synchron deck (YGO Master Duel)
 date: 2022-06-26
+tags: [gaming]
 author: Kuon
 image: /img/yugioh/shooting-majestic-star-dragon.png
 ---

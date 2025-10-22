@@ -6,7 +6,10 @@ const withMDX = createMDX();
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ["i.ibb.co"],
+    remotePatterns: [new URL("https://i.ibb.co/**")],
+  },
+  experimental: {
+    turbopackFileSystemCacheForDev: true,
   },
 };
 
