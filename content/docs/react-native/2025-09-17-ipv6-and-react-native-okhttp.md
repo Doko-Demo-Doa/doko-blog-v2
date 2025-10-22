@@ -1,5 +1,5 @@
 ---
-title: IPv6, React Native and that infinite loading on Android
+title: Happy Eyeballs
 author: Kuon
 tags: [english, react-native]
 ---
