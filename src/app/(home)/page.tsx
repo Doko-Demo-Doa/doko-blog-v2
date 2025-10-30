@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  const posts = blog.getPages();
+  const posts = blog.getPages().reverse();
 
   return (
     <main className="container max-sm:px-0 md:py-12">
