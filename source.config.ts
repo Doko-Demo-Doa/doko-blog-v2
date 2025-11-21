@@ -1,3 +1,4 @@
+import { remarkDirectiveAdmonition } from "fumadocs-core/mdx-plugins";
 import {
   defineCollections,
   defineConfig,
@@ -26,6 +27,13 @@ export const blog = defineCollections({
 
 export default defineConfig({
   mdxOptions: {
-    remarkPlugins: [remarkAutoTypeTable],
+    remarkPlugins: [remarkAutoTypeTable, remarkDirectiveAdmonition],
+    rehypeCodeOptions: {
+      langs: ["ts", "js", "html", "tsx", "mdx", "objective-cpp"],
+      themes: {
+        light: "catppuccin-latte",
+        dark: "catppuccin-mocha",
+      },
+    },
   },
 });
