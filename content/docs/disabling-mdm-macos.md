@@ -3,6 +3,7 @@ title: Disable MDM on Mac OS
 author: Kuon
 date: 2025-01-20
 tags: [english, tips, mac, mdm]
+icon: Wrench
 ---
 
 Note: This is applicable to Big Sur and newer.
