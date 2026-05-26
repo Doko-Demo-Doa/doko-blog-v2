@@ -36,5 +36,19 @@
     "diff": ">=8.0.3",
     "brace-expansion": ">=5.0.6",
     "postcss": "$postcss"
-  }
+  },
+  "description": "My blog, re-built with Fumadocs (migrated from Docusaurus).\r [Create Fumadocs](https://github.com/fuma-nama/fumadocs).",
+  "main": "docker-entrypoint.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Doko-Demo-Doa/doko-blog-v2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Doko-Demo-Doa/doko-blog-v2/issues"
+  },
+  "homepage": "https://github.com/Doko-Demo-Doa/doko-blog-v2#readme"
 }
