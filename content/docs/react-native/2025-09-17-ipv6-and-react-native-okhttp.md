@@ -79,8 +79,8 @@ import java.net.InetAddress
 class CustomDNS : Dns {
   override fun lookup(hostname: String): MutableList<InetAddress> {
     val addresses: MutableList<InetAddress> = InetAddress.getAllByName(hostname).toMutableList()
-    if (addresses.size == 0) {
-      Dns.SYSTEM.lookup(hostname)
+    if (addresses.isEmpty()) {
+      return Dns.SYSTEM.lookup(hostname)
     }
 
     val result: ArrayList<InetAddress> = ArrayList<InetAddress>()
@@ -107,63 +107,27 @@ package yourapp.customnetwork
 import com.facebook.react.modules.network.OkHttpClientFactory
 import com.facebook.react.modules.network.ReactCookieJarContainer
 import okhttp3.OkHttpClient
-import java.security.SecureRandom
-import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
-import javax.net.ssl.*
 
 class CustomNetworkModule : OkHttpClientFactory {
   override fun createNewNetworkModuleClient(): OkHttpClient {
-    val trustAllCerts = arrayOf<TrustManager>(
-      object : X509TrustManager {
-        override fun getAcceptedIssuers(): Array<X509Certificate> {
-          return emptyArray()
-        }
-
-        override fun checkClientTrusted(
-          certs: Array<X509Certificate>, authType: String
-        ) {
-        }
-
-        override fun checkServerTrusted(
-          certs: Array<X509Certificate>, authType: String
-        ) {
-        }
-      }
-    )
-
-    try {
-      val sc = SSLContext.getInstance("SSL")
-      sc.init(null, trustAllCerts, SecureRandom())
-      val sslSocketFactory: SSLSocketFactory = sc.socketFactory
-
-      return OkHttpClient.Builder()
-        .dns(CustomDNS())
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
-        .hostnameVerifier(HostnameVerifier { hostname, session ->
-          true
-        })
-        .cookieJar(ReactCookieJarContainer())
-        .build()
-    } catch (e: Exception) {
-      return OkHttpClient.Builder()
-        .dns(CustomDNS())
-        .cookieJar(ReactCookieJarContainer())
-        .build()
-    }
+    return OkHttpClient.Builder()
+      .dns(CustomDNS())
+      .connectTimeout(10, TimeUnit.SECONDS)
+      .cookieJar(ReactCookieJarContainer())
+      .build()
   }
 }
 ```
 
-Some interfaces have to be implemented. Adjust it to match your needs. After writing and compiling the code, I ran it, and the infinite timeout was gone.
+After writing and compiling the code, I ran it, and the infinite timeout was gone.
 
 The issue can also be resolved by upgrading the OkHttp library (which is v5 at the moment):
 
 ```groovy
-implementation("com.squareup.okhttp3:okhttp:5.1.0")
-implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
-implementation("com.squareup.okhttp3:okhttp-urlconnection:5.1.0")
+implementation("com.squareup.okhttp3:okhttp:5.3.2")
+implementation("com.squareup.okhttp3:logging-interceptor:5.3.2")
+implementation("com.squareup.okhttp3:okhttp-urlconnection:5.3.2")
 ```
 
 Do you still need this? It depends on who you are targeting. Many countries in the UAE have problems with [resolving DNS from Cloudflare](https://github.com/facebook/react-native/issues/32730), and this trick can help in such cases. It also doesn't decrease your app's network performance.
