@@ -4,8 +4,8 @@
   "defaultOpen": true,
   "pages": [
     "index",
-    "getting-started",
     "requirements",
+    "getting-started",
     "installation",
     "mfi-lightning",
     "usage",
