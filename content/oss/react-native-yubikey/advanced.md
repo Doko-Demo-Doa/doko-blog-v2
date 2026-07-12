@@ -1,662 +1,115 @@
 ---
-title: Advanced Configuration
-description: Advanced usage patterns and configuration options
+title: Advanced Patterns
+description: Patterns you can build on top of the library - not built-in APIs
 ---
 
-## Reader Configuration
+Nothing in this page is a shipped API. The library exports plain namespaced functions and no class, hook, connection pool, or batching helper - if you want these conveniences, you build them yourself around `Core` and the module functions. This page shows patterns that are consistent with the real API surface described in [Usage](./usage).
 
-### Create Custom Reader Instance
+## Building your own `useYubiKey` hook
 
-```typescript
-import { YubiKeyReader, LogLevel } from 'react-native-yubikey';
-
-const reader = new YubiKeyReader({
-  // Timeouts
-  defaultTimeout: 45000,
-  nfcScanTimeout: 30000,
-  usbTimeout: 60000,
-  fido2Timeout: 120000,
-
-  // Logging
-  enableLogging: true,
-  logLevel: 'debug',
-  logger: customLogger,
-
-  // Features
-  enableNFC: true,
-  enableUSB: true,
-  enableMFi: true,
-
-  // Retry behavior
-  maxRetries: 3,
-  retryDelayMs: 1000,
-
-  // Custom options
-  customDeviceId: 'my-app-device-id',
-});
-```
-
-### Custom Logger Implementation
+The library doesn't export a hook (the one shown in this project's own example app lives in the example's `context/`, not in the package). A minimal version:
 
 ```typescript
-interface Logger {
-  debug(msg: string, metadata?: any): void;
-  info(msg: string, metadata?: any): void;
-  warn(msg: string, metadata?: any): void;
-  error(msg: string, error?: any): void;
-}
+import { useEffect, useState, useCallback } from 'react';
+import { Core } from '@doko/react-native-yubikit';
+import type { YubiKeyDevice, YubiKeyEvent } from '@doko/react-native-yubikit';
 
-class FirebaseLogger implements Logger {
-  debug(msg: string, metadata?: any) {
-    console.debug(msg, metadata);
-    // Send to Firebase Analytics
-  }
-
-  info(msg: string, metadata?: any) {
-    console.info(msg, metadata);
-  }
-
-  warn(msg: string, metadata?: any) {
-    console.warn(msg, metadata);
-  }
-
-  error(msg: string, error?: any) {
-    console.error(msg, error);
-    // Send to Sentry or Crashlytics
-  }
-}
-
-const reader = new YubiKeyReader({
-  enableLogging: true,
-  logger: new FirebaseLogger(),
-});
-```
-
-## Advanced FIDO2 Configuration
-
-### Resident Keys (Discoverable Credentials)
-
-Store credentials on the YubiKey itself for easier authentication:
-
-```typescript
-async function registerWithResidentKey() {
-  const challenge = await getServerChallenge();
-
-  const attestation = await reader.fido2Register({
-    challenge,
-    pubKeyCredParams: [
-      { alg: -7, type: 'public-key' }, // ES256
-      { alg: -257, type: 'public-key' }, // RS256
-    ],
-    authenticatorSelection: {
-      authenticatorAttachment: 'cross-platform', // YubiKey
-      residentKey: 'preferred', // Store on key
-      userVerification: 'preferred', // Biometric/PIN
-    },
-    timeout: 60000,
-  });
-
-  return attestation;
-}
-```
-
-### Conditional UI with FIDO2
-
-Implement conditional UI for autofill support:
-
-```typescript
-async function authenticateWithConditionalUI() {
-  const challenge = await getServerChallenge();
-
-  const assertion = await reader.fido2Authenticate({
-    challenge,
-    mediation: 'conditional', // Enables autofill
-    timeout: 60000,
-  });
-
-  return assertion;
-}
-```
-
-### Attestation Verification
-
-Verify attestation statements server-side:
-
-```typescript
-interface AttestationVerification {
-  isValid: boolean;
-  credentialId: string;
-  aaguid: string;
-  credentialPublicKey: any;
-  signCount: number;
-}
-
-async function verifyAttestation(
-  attestationObject: string,
-  clientDataJSON: string
-): Promise<AttestationVerification> {
-  // Decode attestationObject from base64url
-  const attestation = cbor.decode(Buffer.from(attestationObject, 'utf-8'));
-
-  // Verify format
-  if (attestation.fmt !== 'fido-u2f' && attestation.fmt !== 'packed') {
-    throw new Error('Unsupported attestation format');
-  }
-
-  // Verify signature
-  const verified = verifyAttestationSignature(attestation);
-  if (!verified) {
-    throw new Error('Invalid attestation signature');
-  }
-
-  return {
-    isValid: true,
-    credentialId: attestation.authData.credentialId,
-    aaguid: attestation.authData.aaguid,
-    credentialPublicKey: attestation.authData.credentialPublicKey,
-    signCount: attestation.authData.signCount,
-  };
-}
-```
-
-## Custom Challenge Generation
-
-### Cryptographically Secure Challenges
-
-```typescript
-import crypto from 'react-native-crypto';
-
-function generateSecureChallenge(lengthBytes: number = 32): string {
-  const buffer = crypto.randomBytes(lengthBytes);
-  return Buffer.from(buffer).toString('base64url');
-}
-
-// Verify challenge on server
-async function verifyChallenge(
-  storedChallenge: string,
-  receivedChallenge: string
-): Promise<boolean> {
-  const stored = Buffer.from(storedChallenge, 'base64url');
-  const received = Buffer.from(receivedChallenge, 'base64url');
-
-  // Use constant-time comparison to prevent timing attacks
-  return crypto.timingSafeEqual(stored, received);
-}
-```
-
-### Challenge Rotation
-
-```typescript
-interface StoredChallenge {
-  value: string;
-  createdAt: Date;
-  expiresAt: Date;
-  used: boolean;
-}
-
-async function generateAndStoreChallenge(
-  userId: string,
-  expirationSeconds: number = 300
-): Promise<string> {
-  const challenge = generateSecureChallenge();
-  const now = new Date();
-  const expiresAt = new Date(now.getTime() + expirationSeconds * 1000);
-
-  // Store in database
-  await storeChallenge(userId, {
-    value: challenge,
-    createdAt: now,
-    expiresAt,
-    used: false,
-  });
-
-  return challenge;
-}
-
-async function verifyChallengeUsage(
-  userId: string,
-  challenge: string
-): Promise<boolean> {
-  const stored = await getChallengeFromStorage(userId, challenge);
-
-  if (!stored) {
-    return false; // Challenge not found
-  }
-
-  if (stored.used) {
-    return false; // Challenge already used
-  }
-
-  if (new Date() > stored.expiresAt) {
-    return false; // Challenge expired
-  }
-
-  // Mark as used
-  await markChallengeAsUsed(userId, challenge);
-
-  return true;
-}
-```
-
-## Connection Management
-
-### Device Selection UI
-
-```typescript
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  FlatList,
-  TouchableOpacity,
-  Text,
-  ActivityIndicator,
-} from 'react-native';
-import { YubiKeyReader } from 'react-native-yubikey';
-
-interface Device {
-  id: string;
-  name: string;
-  type: 'nfc' | 'usb' | 'mfi';
-}
-
-export function DeviceSelector() {
-  const [devices, setDevices] = useState<Device[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
-
-  const reader = new YubiKeyReader();
+export function useYubiKey() {
+  const [devices, setDevices] = useState<YubiKeyDevice[]>([]);
+  const [lastError, setLastError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function discoverDevices() {
-      setLoading(true);
-      try {
-        const discoveredDevices: Device[] = [];
-
-        // Check for MFi devices (iOS)
-        const mfiDevices = await reader.getMFiDevices();
-        discoveredDevices.push(
-          ...mfiDevices.map(d => ({
-            id: d.serialNumber,
-            name: `YubiKey 5Ci (${d.serialNumber})`,
-            type: 'mfi' as const,
-          }))
-        );
-
-        // Check for USB devices (Android)
-        const usbDevices = await reader.getConnectedUSBDevices();
-        discoveredDevices.push(
-          ...usbDevices.map((d, i) => ({
-            id: `usb-${i}`,
-            name: `USB Device ${i + 1}`,
-            type: 'usb' as const,
-          }))
-        );
-
-        setDevices(discoveredDevices);
-      } catch (error) {
-        console.error('Device discovery failed:', error);
-      } finally {
-        setLoading(false);
+    const subscription = Core.addYubiKeyListener((event: YubiKeyEvent) => {
+      if (event.type === 'attached') {
+        setDevices((prev) => [...prev, event.device]);
+      } else if (event.type === 'detached') {
+        setDevices((prev) => prev.filter((d) => d.handle !== event.handle));
+      } else if (event.type === 'error') {
+        setLastError(event.error);
       }
-    }
+    });
 
-    discoverDevices();
+    Core.startUsbDiscovery({ handlePermissions: true });
+    Core.startNfcDiscovery();
 
-    // Refresh every 3 seconds
-    const interval = setInterval(discoverDevices, 3000);
-    return () => clearInterval(interval);
+    return () => {
+      subscription.remove();
+      Core.stopUsbDiscovery();
+      Core.stopNfcDiscovery();
+    };
   }, []);
 
-  const handleSelectDevice = async (device: Device) => {
-    try {
-      if (device.type === 'mfi') {
-        const mfiDevice = await reader.getMFiDevices()
-          .then(d => d.find(x => x.serialNumber === device.id));
-        if (mfiDevice) {
-          await reader.selectMFiDevice(mfiDevice);
-        }
-      } else if (device.type === 'usb') {
-        const usbDevice = await reader.getConnectedUSBDevices()
-          .then(d => d[parseInt(device.id.split('-')[1])]);
-        if (usbDevice) {
-          await reader.selectUSBDevice(usbDevice);
-        }
-      }
-
-      setSelectedDevice(device);
-    } catch (error) {
-      console.error('Failed to select device:', error);
-    }
-  };
-
-  if (loading) {
-    return <ActivityIndicator />;
-  }
-
-  return (
-    <View>
-      <FlatList
-        data={devices}
-        keyExtractor={d => d.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => handleSelectDevice(item)}
-            style={{
-              padding: 10,
-              backgroundColor:
-                selectedDevice?.id === item.id ? '#e3f2fd' : '#fff',
-            }}
-          >
-            <Text>{item.name}</Text>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
-  );
+  return { devices, lastError };
 }
 ```
 
-### Persistent Connections
+## Sequencing multiple operations against one device
 
-For MFi/USB connections, maintain a persistent connection:
+Since every module function takes `device.handle` directly and manages its own connection, you can call several in sequence without any manual connect/disconnect bookkeeping:
 
 ```typescript
-interface PersistentConnection {
-  deviceId: string;
-  isConnected: boolean;
-  connect(): Promise<void>;
-  disconnect(): Promise<void>;
-  execute<T>(operation: () => Promise<T>): Promise<T>;
-}
+async function collectDeviceSummary(device) {
+  const info = await Support.readInfo(device.handle);
+  const name = Support.getName(info);
+  const oathCredentials = await Oath.getCredentials(device.handle).catch(() => null);
+  const pivPinAttempts = await Piv.getPinAttempts(device.handle).catch(() => null);
 
-class YubiKeyConnection implements PersistentConnection {
-  deviceId: string;
-  isConnected: boolean = false;
-  private reader: YubiKeyReader;
-  private reconnectAttempts: number = 0;
-  private maxReconnectAttempts: number = 3;
-
-  constructor(deviceId: string) {
-    this.deviceId = deviceId;
-    this.reader = new YubiKeyReader();
-  }
-
-  async connect(): Promise<void> {
-    try {
-      const devices = await this.reader.getMFiDevices();
-      const device = devices.find(d => d.serialNumber === this.deviceId);
-
-      if (device) {
-        await this.reader.selectMFiDevice(device);
-        this.isConnected = true;
-        this.reconnectAttempts = 0;
-      }
-    } catch (error) {
-      throw new Error(`Failed to connect to device: ${error.message}`);
-    }
-  }
-
-  async disconnect(): Promise<void> {
-    this.isConnected = false;
-  }
-
-  async execute<T>(operation: () => Promise<T>): Promise<T> {
-    if (!this.isConnected) {
-      await this.connect();
-    }
-
-    try {
-      return await operation();
-    } catch (error) {
-      // Attempt reconnection and retry
-      if (this.reconnectAttempts < this.maxReconnectAttempts) {
-        this.reconnectAttempts++;
-        await this.disconnect();
-        await this.connect();
-        return await operation();
-      }
-      throw error;
-    }
-  }
+  return { name, serialNumber: info.serialNumber, oathCredentials, pivPinAttempts };
 }
 ```
 
-## Batch Operations
+Each `.catch(() => null)` here is deliberate - a device might not have OATH or PIV enabled, and you don't want one missing application to fail the whole summary.
 
-### Transaction-Like Behavior
+## Platform-gated calls
+
+Because iOS is missing OpenPGP, most of YubiOtp's slot-programming surface, and FIDO2 credential management, wrap those calls so you fail fast with a clear message instead of surfacing a generic `"Not implemented on iOS"` rejection deep in a stack trace:
 
 ```typescript
-interface BatchOperation {
-  name: string;
-  execute(): Promise<any>;
-}
+import { Platform } from 'react-native';
 
-class YubiKeyBatch {
-  private operations: BatchOperation[] = [];
-  private reader: YubiKeyReader;
-
-  constructor(reader: YubiKeyReader) {
-    this.reader = reader;
-  }
-
-  add(name: string, operation: () => Promise<any>): this {
-    this.operations.push({
-      name,
-      execute: operation,
-    });
-    return this;
-  }
-
-  async execute(): Promise<Map<string, any>> {
-    const results = new Map<string, any>();
-
-    for (const op of this.operations) {
-      try {
-        results.set(op.name, await op.execute());
-      } catch (error) {
-        // Log error but continue with next operation
-        console.error(`Batch operation '${op.name}' failed:`, error);
-        results.set(op.name, { error: error.message });
-      }
-    }
-
-    return results;
+function assertAndroid(feature: string) {
+  if (Platform.OS !== 'android') {
+    throw new Error(`${feature} is only available on Android with this library`);
   }
 }
 
-// Usage
-const batch = new YubiKeyBatch(reader);
-
-batch
-  .add('otp1', () => reader.readOTP())
-  .add('otp2', () => reader.readOTP({ timeout: 40000 }))
-  .add('attestation', () =>
-    reader.fido2Register({ challenge, /* ... */ })
-  );
-
-const results = await batch.execute();
+async function pgpSign(device, payload) {
+  assertAndroid('OpenPGP signing');
+  return OpenPgp.sign(device.handle, payload);
+}
 ```
 
-## Performance Optimization
+## Raw APDU access
 
-### Connection Pooling
+`Core.requestConnection` / `Core.sendApdu` / `Core.closeConnection` are the one place you do manage a connection handle explicitly - useful if you need to talk to an applet this library doesn't wrap at a higher level:
 
 ```typescript
-class YubiKeyPool {
-  private connections: Map<string, YubiKeyConnection> = new Map();
-  private maxConnections: number = 5;
+import { Core } from '@doko/react-native-yubikit';
 
-  async getConnection(deviceId: string): Promise<YubiKeyConnection> {
-    let connection = this.connections.get(deviceId);
-
-    if (!connection) {
-      if (this.connections.size >= this.maxConnections) {
-        // Evict oldest connection
-        const oldest = this.connections.entries().next().value;
-        if (oldest) {
-          oldest[1].disconnect();
-          this.connections.delete(oldest[0]);
-        }
-      }
-
-      connection = new YubiKeyConnection(deviceId);
-      this.connections.set(deviceId, connection);
-    }
-
-    return connection;
-  }
-
-  closeAll(): void {
-    this.connections.forEach(conn => conn.disconnect());
-    this.connections.clear();
+async function withSmartCardConnection<T>(
+  device,
+  fn: (connectionHandle: string) => Promise<T>,
+): Promise<T> {
+  const connectionHandle = await Core.requestConnection(device.handle, 'SmartCardConnection');
+  try {
+    return await fn(connectionHandle);
+  } finally {
+    Core.closeConnection(connectionHandle);
   }
 }
+
+const response = await withSmartCardConnection(device, (handle) =>
+  Core.sendApdu(handle, base64Apdu),
+);
 ```
 
-### Caching Challenge Results
+## What this library does not give you
 
-```typescript
-interface CachedChallenge {
-  value: string;
-  createdAt: Date;
-  ttlMs: number;
-}
+- No connection pooling, retry policies, or timeouts beyond what you write yourself.
+- No metrics/analytics hooks - if you want operation timing or success/failure counts, wrap the calls yourself, same as the sequencing example above.
+- No built-in challenge generation, credential caching, or backup-code flow - these are entirely your app's/server's responsibility.
 
-class ChallengeCache {
-  private cache: Map<string, CachedChallenge> = new Map();
+## Related
 
-  store(key: string, challenge: string, ttlMs: number = 300000): void {
-    this.cache.set(key, {
-      value: challenge,
-      createdAt: new Date(),
-      ttlMs,
-    });
-
-    // Auto-cleanup on TTL
-    setTimeout(() => this.cache.delete(key), ttlMs);
-  }
-
-  retrieve(key: string): string | null {
-    const cached = this.cache.get(key);
-
-    if (!cached) {
-      return null;
-    }
-
-    const age = Date.now() - cached.createdAt.getTime();
-    if (age > cached.ttlMs) {
-      this.cache.delete(key);
-      return null;
-    }
-
-    return cached.value;
-  }
-
-  clear(): void {
-    this.cache.clear();
-  }
-}
-```
-
-## Monitoring & Analytics
-
-### Operation Tracking
-
-```typescript
-interface OperationMetrics {
-  operationName: string;
-  startTime: Date;
-  endTime: Date;
-  duration: number;
-  success: boolean;
-  errorMessage?: string;
-  metadata?: Record<string, any>;
-}
-
-class MetricsCollector {
-  private metrics: OperationMetrics[] = [];
-
-  track<T>(
-    operationName: string,
-    operation: () => Promise<T>
-  ): Promise<T> {
-    const startTime = new Date();
-
-    return operation()
-      .then(result => {
-        const endTime = new Date();
-        this.recordMetric({
-          operationName,
-          startTime,
-          endTime,
-          duration: endTime.getTime() - startTime.getTime(),
-          success: true,
-        });
-        return result;
-      })
-      .catch(error => {
-        const endTime = new Date();
-        this.recordMetric({
-          operationName,
-          startTime,
-          endTime,
-          duration: endTime.getTime() - startTime.getTime(),
-          success: false,
-          errorMessage: error.message,
-        });
-        throw error;
-      });
-  }
-
-  private recordMetric(metric: OperationMetrics): void {
-    this.metrics.push(metric);
-
-    // Send to analytics service
-    this.sendToAnalytics(metric);
-
-    // Keep only recent metrics
-    if (this.metrics.length > 1000) {
-      this.metrics = this.metrics.slice(-500);
-    }
-  }
-
-  private sendToAnalytics(metric: OperationMetrics): void {
-    // Send to your analytics backend
-    fetch('/api/metrics', {
-      method: 'POST',
-      body: JSON.stringify({
-        ...metric,
-        startTime: metric.startTime.toISOString(),
-        endTime: metric.endTime.toISOString(),
-      }),
-    }).catch(err => console.error('Metrics send failed:', err));
-  }
-
-  getMetrics(): OperationMetrics[] {
-    return [...this.metrics];
-  }
-
-  getSummary() {
-    const successful = this.metrics.filter(m => m.success).length;
-    const failed = this.metrics.filter(m => !m.success).length;
-    const avgDuration =
-      this.metrics.reduce((sum, m) => sum + m.duration, 0) /
-      this.metrics.length;
-
-    return {
-      total: this.metrics.length,
-      successful,
-      failed,
-      successRate: (successful / this.metrics.length) * 100,
-      averageDuration: Math.round(avgDuration),
-    };
-  }
-}
-```
-
-## References
-
-- [Getting Started](./getting-started)
-- [Usage Examples](./usage)
-- [Security Best Practices](./security)
-- [Troubleshooting](./troubleshooting)
+- [Usage Examples](./usage) for the real function signatures these patterns build on
+- [Troubleshooting](./troubleshooting) for platform gaps to guard against

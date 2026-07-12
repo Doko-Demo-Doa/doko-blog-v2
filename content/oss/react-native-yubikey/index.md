@@ -11,7 +11,7 @@ The library is split into 8 independent native modules, exposed as namespaces fr
 import { Core, Support, Management, Oath, Piv, OpenPgp, YubiOtp, Fido } from '@doko/react-native-yubikit';
 ```
 
-There is no `YubiKeyReader` class, no React hook shipped by the library, and no default export — everything is a plain exported function grouped by namespace, plus the types from `src/types.ts` re-exported at the top level.
+There is no `YubiKeyReader` class, no React hook shipped by the library, and no default export - everything is a plain exported function grouped by namespace, plus the types from `src/types.ts` re-exported at the top level.
 
 ## Feature coverage
 
@@ -26,13 +26,13 @@ There is no `YubiKeyReader` class, no React hook shipped by the library, and no 
 | `YubiOtp` | OTP slot programming, challenge-response | Partial (only `calculateHmacSha1`) | Full |
 | `Fido` | FIDO2/WebAuthn registration & authentication | Partial (no credential management) | Full |
 
-Android has full parity across every module. iOS is missing OpenPGP entirely, YubiOTP slot programming, and FIDO2 resident-credential management — these gaps come from the underlying YubiKit iOS SDK, not from this wrapper.
+Android has full parity across every module. iOS is missing OpenPGP entirely, YubiOTP slot programming, and FIDO2 resident-credential management - these gaps come from the underlying YubiKit iOS SDK, not from this wrapper.
 
-There is **no classic FIDO U2F (CTAP1) API** — only FIDO2/CTAP2 (`Fido.makeCredential` / `Fido.getAssertion`). There's also no QR-code scanning and no NFC static-OTP tag reading exposed on either platform.
+There is **no classic FIDO U2F (CTAP1) API** - only FIDO2/CTAP2 (`Fido.makeCredential` / `Fido.getAssertion`). There's also no QR-code scanning and no NFC static-OTP tag reading exposed on either platform.
 
 ## Requirements at a glance
 
-- React Native 0.74+ with the **New Architecture enabled** (Fabric/TurboModules) — there is no old-bridge fallback
+- React Native 0.74+ with the **New Architecture enabled** (Fabric/TurboModules) - there is no old-bridge fallback
 - iOS 16.4+ recommended (USB-C smart card connections require iOS 16+; Lightning/accessory YubiKeys work on older iOS)
 - Android `minSdkVersion` 24
 
@@ -58,4 +58,4 @@ npm install @doko/react-native-yubikit
 yarn add @doko/react-native-yubikit
 ```
 
-Then follow [Installation](./installation) — iOS in particular needs a Podfile override, since the CocoaPods-trunk `YubiKit` pod is older than what this library requires.
+Then follow [Installation](./installation) - iOS in particular needs a Podfile override, since the CocoaPods-trunk `YubiKit` pod is older than what this library requires.

@@ -1,479 +1,209 @@
 ---
 title: Usage Examples
-description: Code examples for common YubiKey operations
+description: Real code examples using the actual module APIs
 ---
 
-## Initialize YubiKey Reader
+All examples assume you've already run discovery and have a `device: YubiKeyDevice` from a `Core.addYubiKeyListener` event or `Core.getDiscoveredDevices()`. Every module function below takes `device.handle` as its first argument - the modules manage their own connection internally, so you don't normally need `Core.requestConnection` unless you're doing raw APDU work.
+
+## Core - discovery, raw APDU
 
 ```typescript
-import { YubiKeyReader } from 'react-native-yubikey';
+import { Core } from '@doko/react-native-yubikit';
 
-// Create reader instance
-const reader = new YubiKeyReader({
-  defaultTimeout: 45000,
-  enableLogging: true,
+const subscription = Core.addYubiKeyListener((event) => {
+  if (event.type === 'attached') {
+    handleDevice(event.device);
+  }
 });
 
-// Check capabilities
-const capabilities = await reader.getCapabilities();
-console.log('Supported protocols:', capabilities.protocols);
-```
+Core.startUsbDiscovery({ handlePermissions: true });
 
-## Read OTP (One-Time Password)
-
-### Basic OTP Reading
-
-```typescript
-async function readOTP() {
+// Raw APDU escape hatch - only needed for low-level access
+async function sendRawApdu(device) {
+  const connectionHandle = await Core.requestConnection(device.handle, 'SmartCardConnection');
   try {
-    const otp = await reader.readOTP({
-      timeout: 30000,
-      onProgress: (status) => {
-        console.log('Status:', status); // 'scanning', 'reading', 'complete'
-      },
-    });
-
-    console.log('OTP Code:', otp.code);
-    console.log('OTP Type:', otp.type); // 'TOTP', 'HOTP', or 'YUBICO'
-    console.log('Validity:', otp.validFrom, otp.validUntil);
-  } catch (error) {
-    console.error('Failed to read OTP:', error.message);
+    const response = await Core.sendApdu(connectionHandle, base64Apdu);
+    return response;
+  } finally {
+    Core.closeConnection(connectionHandle);
   }
 }
 ```
 
-### OTP in Login Flow
+`ConnectionType` is one of `'SmartCardConnection' | 'OtpConnection' | 'FidoConnection'`.
+
+## Support - device info
 
 ```typescript
-import React, { useState } from 'react';
-import { View, Button, TextInput, Text, ActivityIndicator } from 'react-native';
+import { Support } from '@doko/react-native-yubikit';
 
-export function LoginWithOTP() {
-  const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const reader = new YubiKeyReader();
+async function describe(device) {
+  const info = await Support.readInfo(device.handle);
+  const name = Support.getName(info); // synchronous - not a Promise
+  console.log(name, info.serialNumber, info.version);
+}
+```
 
-  const handleReadOTP = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const result = await reader.readOTP({ timeout: 30000 });
-      setOtp(result.code);
-    } catch (err) {
-      setError('Failed to read OTP: ' + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+## Management - device config
 
-  const handleSubmit = async () => {
-    if (!email || !otp) {
-      setError('Email and OTP required');
-      return;
-    }
+```typescript
+import { Management } from '@doko/react-native-yubikit';
 
-    try {
-      const response = await fetch('/api/login/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp }),
-      });
+async function readConfig(device) {
+  const info = await Management.getDeviceInfo(device.handle);
+  return info;
+}
 
-      if (response.ok) {
-        const { token } = await response.json();
-        // Store token and navigate to home
-      } else {
-        setError('Invalid credentials');
-      }
-    } catch (err) {
-      setError('Login failed: ' + err.message);
-    }
-  };
+async function writeConfig(device, config) {
+  await Management.updateDeviceConfig(device.handle, config, /* reboot */ false);
+}
+```
 
-  return (
-    <View style={{ padding: 20 }}>
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        editable={!loading}
-      />
-      <TextInput
-        placeholder="OTP (tap button to read)"
-        value={otp}
-        onChangeText={setOtp}
-        editable={false}
-      />
-      <Button
-        title={loading ? 'Reading OTP...' : 'Read OTP from YubiKey'}
-        onPress={handleReadOTP}
-        disabled={loading}
-      />
-      <Button title="Login" onPress={handleSubmit} disabled={loading} />
-      {error && <Text style={{ color: 'red' }}>{error}</Text>}
-    </View>
+`Management.setMode` and `Management.deviceReset` are Android-first: `setMode` rejects on iOS entirely (use `updateDeviceConfig` instead), and `deviceReset` on iOS only works on YubiKey Bio - Multi-Protocol Edition running firmware 5.6+.
+
+## Oath - TOTP/HOTP codes
+
+```typescript
+import { Oath } from '@doko/react-native-yubikit';
+
+async function listCodes(device) {
+  const credentials = await Oath.getCredentials(device.handle);
+  const codes = await Oath.calculateCodes(device.handle);
+  return codes;
+}
+
+async function addCredential(device, credentialData) {
+  // requireTouch: whether a physical touch is required to calculate this code
+  return Oath.putCredential(device.handle, credentialData, /* requireTouch */ false);
+}
+
+async function removeCredential(device, credentialId) {
+  await Oath.deleteCredential(device.handle, credentialId);
+}
+```
+
+If the OATH application is password-protected, unlock it first:
+
+```typescript
+const unlocked = await Oath.unlockWithPassword(device.handle, userPassword);
+if (!unlocked) {
+  // wrong password
+}
+```
+
+Full parity on both platforms.
+
+## Piv - certificates and signing
+
+```typescript
+import { Piv } from '@doko/react-native-yubikit';
+
+async function signWithPiv(device, slot, keyType, payload) {
+  await Piv.verifyPin(device.handle, userPin);
+  return Piv.rawSignOrDecrypt(device.handle, slot, keyType, payload);
+}
+
+async function generateAndAttest(device, slot) {
+  const publicKey = await Piv.generateKey(
+    device.handle,
+    slot,
+    'ECCP256',
+    'DEFAULT', // pin policy
+    'DEFAULT', // touch policy
   );
+  const attestation = await Piv.attestKey(device.handle, slot);
+  return { publicKey, attestation };
 }
 ```
 
-## FIDO2 Authentication
+On iOS, `rawSignOrDecrypt` does **not** support `RSA3072`/`RSA4096` even though `generateKey` can create keys of those sizes there - if you need to sign/decrypt with those key sizes, do it on Android, or generate a smaller RSA key or an EC key instead on iOS.
 
-### FIDO2 Registration
-
-```typescript
-async function registerWithFIDO2(userId: string, userEmail: string) {
-  try {
-    // Get challenge from server
-    const challenge = await fetch('/api/fido2/register-begin', {
-      method: 'POST',
-      body: JSON.stringify({ userId, userEmail }),
-    }).then(r => r.json()).then(r => r.challenge);
-
-    // Perform registration on YubiKey
-    const attestation = await reader.fido2Register({
-      relyingParty: {
-        id: 'example.com',
-        name: 'Example App',
-        origin: 'https://example.com',
-      },
-      user: {
-        id: userId,
-        name: userEmail,
-        displayName: userEmail.split('@')[0],
-      },
-      challenge: challenge, // base64url-encoded
-      pubKeyCredParams: [
-        { alg: -7, type: 'public-key' }, // ES256
-        { alg: -257, type: 'public-key' }, // RS256
-      ],
-      timeout: 60000,
-      attestation: 'direct',
-      authenticatorSelection: {
-        authenticatorAttachment: 'cross-platform',
-        userVerification: 'preferred',
-        requireResidentKey: false,
-      },
-    });
-
-    // Verify and store on server
-    const response = await fetch('/api/fido2/register-complete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId,
-        attestationObject: attestation.attestationObject,
-        clientDataJSON: attestation.clientDataJSON,
-        credentialId: attestation.credentialId,
-      }),
-    });
-
-    return await response.json();
-  } catch (error) {
-    console.error('FIDO2 Registration failed:', error);
-    throw error;
-  }
-}
-```
-
-### FIDO2 Authentication
+## OpenPgp - Android only
 
 ```typescript
-async function authenticateWithFIDO2() {
-  try {
-    // Get assertion challenge from server
-    const challenge = await fetch('/api/fido2/authenticate-begin')
-      .then(r => r.json())
-      .then(r => r.challenge);
-
-    // Perform authentication
-    const assertion = await reader.fido2Authenticate({
-      relyingPartyId: 'example.com',
-      challenge: challenge, // base64url-encoded
-      allowCredentials: savedCredentials, // from registration
-      timeout: 60000,
-      userVerification: 'preferred',
-    });
-
-    // Verify on server
-    const response = await fetch('/api/fido2/authenticate-complete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        credentialId: assertion.credentialId,
-        authenticatorData: assertion.authenticatorData,
-        clientDataJSON: assertion.clientDataJSON,
-        signature: assertion.signature,
-      }),
-    });
-
-    return await response.json();
-  } catch (error) {
-    console.error('FIDO2 Authentication failed:', error);
-    throw error;
-  }
-}
-```
-
-### Complete FIDO2 Component
-
-```typescript
-import React, { useState } from 'react';
-import { View, Button, Text, ActivityIndicator } from 'react-native';
-import { YubiKeyReader } from 'react-native-yubikey';
-
-export function FIDO2Component() {
-  const [status, setStatus] = useState('');
-  const [loading, setLoading] = useState(false);
-  const reader = new YubiKeyReader();
-
-  const handleRegister = async () => {
-    setLoading(true);
-    setStatus('Starting registration...');
-    try {
-      await registerWithFIDO2('user123', 'user@example.com');
-      setStatus('Registration successful!');
-    } catch (error) {
-      setStatus('Registration failed: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAuthenticate = async () => {
-    setLoading(true);
-    setStatus('Starting authentication...');
-    try {
-      await authenticateWithFIDO2();
-      setStatus('Authentication successful!');
-    } catch (error) {
-      setStatus('Authentication failed: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <View style={{ padding: 20 }}>
-      <Button
-        title="Register with FIDO2"
-        onPress={handleRegister}
-        disabled={loading}
-      />
-      <Button
-        title="Authenticate with FIDO2"
-        onPress={handleAuthenticate}
-        disabled={loading}
-      />
-      {loading && <ActivityIndicator />}
-      <Text>{status}</Text>
-    </View>
-  );
-}
-```
-
-## Platform-Specific Operations
-
-### iOS-Specific: MFi YubiKey 5Ci
-
-```typescript
+import { OpenPgp } from '@doko/react-native-yubikit';
 import { Platform } from 'react-native';
 
-async function handleMFiYubiKey() {
-  if (Platform.OS !== 'ios') {
-    console.log('MFi only supported on iOS');
-    return;
-  }
-
-  const reader = new YubiKeyReader();
-
-  // Check for MFi support
-  const hasMFi = await reader.hasMFiSupport();
-  if (!hasMFi) {
-    console.log('Device does not support MFi accessories');
-    return;
-  }
-
-  // Get connected MFi devices
-  const devices = await reader.getMFiDevices();
-  console.log(`Found ${devices.length} YubiKey(s)`);
-
-  if (devices.length > 0) {
-    // Select first device
-    await reader.selectMFiDevice(devices[0]);
-
-    // Perform operations
-    const otp = await reader.readOTP();
-    console.log('OTP from MFi key:', otp.code);
-  }
-
-  // Listen for connection changes
-  reader.on('mfiDeviceConnected', (device) => {
-    console.log('YubiKey connected:', device.serialNumber);
-  });
-
-  reader.on('mfiDeviceDisconnected', (device) => {
-    console.log('YubiKey disconnected');
-  });
-}
-```
-
-### Android-Specific: USB OTG
-
-```typescript
-import { Platform } from 'react-native';
-
-async function handleUSBOTG() {
+async function pgpSign(device, payload) {
   if (Platform.OS !== 'android') {
-    console.log('USB OTG only on Android');
-    return;
+    throw new Error('OpenPGP is not available on iOS - the YubiKit iOS SDK has no OpenPGP session');
   }
-
-  const reader = new YubiKeyReader();
-
-  // Get connected USB devices
-  const devices = await reader.getConnectedUSBDevices();
-  console.log(`Found ${devices.length} USB device(s)`);
-
-  if (devices.length > 0) {
-    // Select first device
-    await reader.selectUSBDevice(devices[0]);
-
-    // Request permission if needed
-    const permitted = await reader.requestUSBPermission(devices[0]);
-    if (!permitted) {
-      console.log('User denied USB permission');
-      return;
-    }
-
-    // Perform operations
-    const otp = await reader.readOTP();
-    console.log('OTP from USB key:', otp.code);
-  }
-
-  // Listen for device changes
-  reader.on('usbDeviceConnected', (device) => {
-    console.log('USB device connected:', device.name);
-  });
-
-  reader.on('usbDeviceDisconnected', (device) => {
-    console.log('USB device disconnected');
-  });
+  await OpenPgp.verifyUserPin(device.handle, userPin);
+  return OpenPgp.sign(device.handle, payload);
 }
 ```
 
-## Error Handling
+Every `OpenPgp.*` function rejects with `OPENPGP_ERROR: "Not implemented on iOS"` if called on iOS. Guard for platform before calling into this module, rather than catching the rejection.
+
+## YubiOtp - challenge-response and slot programming
 
 ```typescript
-import { YubiKeyError, YubiKeyErrorCode } from 'react-native-yubikey';
+import { YubiOtp } from '@doko/react-native-yubikit';
+import { Platform } from 'react-native';
 
-async function robustYubiKeyOperation() {
-  try {
-    const otp = await reader.readOTP({ timeout: 30000 });
-    return otp;
-  } catch (error) {
-    if (error instanceof YubiKeyError) {
-      switch (error.code) {
-        case YubiKeyErrorCode.NFC_NOT_AVAILABLE:
-          console.error('NFC is not available on this device');
-          // Show fallback option
-          break;
+// Works on both platforms
+async function challengeResponse(device, slot, challenge) {
+  return YubiOtp.calculateHmacSha1(device.handle, slot, challenge);
+}
 
-        case YubiKeyErrorCode.TIMEOUT:
-          console.error('Operation timed out - user did not scan key');
-          // Retry or cancel
-          break;
-
-        case YubiKeyErrorCode.USER_CANCELLED:
-          console.log('User cancelled the operation');
-          // No error to show
-          break;
-
-        case YubiKeyErrorCode.INVALID_KEY:
-          console.error('Invalid or unrecognized YubiKey');
-          // Ask user to check device
-          break;
-
-        case YubiKeyErrorCode.PROTOCOL_ERROR:
-          console.error('Protocol error communicating with key');
-          // Retry operation
-          break;
-
-        case YubiKeyErrorCode.DEVICE_ERROR:
-          console.error('YubiKey hardware error');
-          // Ask user to try again or replace key
-          break;
-
-        default:
-          console.error('Unknown error:', error.message);
-      }
-    } else {
-      console.error('Unexpected error:', error);
-    }
-    throw error;
+// Android only - iOS rejects with "Not implemented on iOS"
+async function programSlot(device, slot, configuration) {
+  if (Platform.OS !== 'android') {
+    throw new Error('OTP slot programming is not available on iOS');
   }
+  await YubiOtp.putConfiguration(device.handle, slot, configuration);
 }
 ```
 
-## Advanced Usage
+`OtpSlot` is `'ONE' | 'TWO'`. On iOS, only `calculateHmacSha1` works - `getConfigurationState`, `getVersion`, `getSerialNumber`, `swapConfigurations`, `deleteConfiguration`, `putConfiguration`, `updateConfiguration`, and `setNdefConfiguration` are Android-only.
 
-### Custom Challenges
+## Fido - FIDO2/WebAuthn
 
 ```typescript
-import crypto from 'react-native-crypto';
-import { base64url } from 'react-native-yubikey';
+import { Fido } from '@doko/react-native-yubikit';
 
-function generateChallenge(): string {
-  const buffer = crypto.randomBytes(32);
-  return base64url.encode(buffer);
+async function register(device, options, effectiveDomain, pin) {
+  return Fido.makeCredential(device.handle, options, effectiveDomain, pin);
 }
 
-async function fido2WithCustomChallenge() {
-  const challenge = generateChallenge();
-  
-  const attestation = await reader.fido2Register({
-    challenge,
-    // ... other options
-  });
+async function authenticate(device, options, effectiveDomain, pin) {
+  return Fido.getAssertion(device.handle, options, effectiveDomain, pin);
 }
 ```
 
-### Timeout Configuration
+`options` mirrors the WebAuthn `PublicKeyCredentialCreationOptions` / `PublicKeyCredentialRequestOptions` shapes (check the exported types for the exact fields), with binary values like `challenge`, `user.id`, and credential IDs passed as base64 strings rather than `ArrayBuffer`s, since the bridge only carries plain objects and base64 strings.
+
+Credential management is Android-only:
 
 ```typescript
-const reader = new YubiKeyReader({
-  defaultTimeout: 45000,     // Global default
-  nfcScanTimeout: 30000,     // For NFC operations
-  usbTimeout: 60000,         // For USB operations
-  fido2Timeout: 120000,      // For FIDO2 operations
-});
-```
+import { Platform } from 'react-native';
 
-### Batch Operations
-
-```typescript
-async function performMultipleOperations() {
-  const reader = new YubiKeyReader();
-
-  // For MFi connections, operations can be batched
-  // without re-scanning
-  try {
-    const otp1 = await reader.readOTP();
-    const otp2 = await reader.readOTP();
-    const otp3 = await reader.readOTP();
-
-    return [otp1, otp2, otp3];
-  } catch (error) {
-    console.error('Batch operation failed:', error);
-    throw error;
+async function listResidentCredentials(device, rpId, pin) {
+  if (Platform.OS !== 'android') {
+    throw new Error('FIDO2 credential management is not available on iOS');
   }
+  return Fido.getCredentials(device.handle, rpId, pin);
 }
 ```
 
-## References
+There is no classic FIDO U2F (CTAP1) API in this library - only CTAP2 via `makeCredential`/`getAssertion`.
 
-- [Getting Started](./getting-started)
-- [Installation Guide](./installation)
-- [Security Best Practices](./security)
-- [Troubleshooting](./troubleshooting)
+## Error handling
+
+Rejections aren't a custom error class - catch them like any RN promise rejection and inspect the message string. Native code uses a fixed set of error-code prefixes per module family: `CONNECTION_ERROR`, `APDU_ERROR`, `MANAGEMENT_ERROR`, `OATH_ERROR`, `PIV_ERROR`, `OPENPGP_ERROR`, `YUBIOTP_ERROR`, `FIDO_ERROR`, `SUPPORT_ERROR`. There's no finer-grained code for things like "wrong PIN" or "touch timeout" - you have to read the message text.
+
+```typescript
+try {
+  await Piv.verifyPin(device.handle, pin);
+} catch (error) {
+  console.error('PIV error:', String(error));
+}
+```
+
+On Android, some programmer-error conditions (unknown connection type, missing Activity for NFC) throw plain Kotlin exceptions rather than going through the reject path - these will surface as unhandled native exceptions if not caught by your own try/catch.
+
+## Related
+
+- [Getting Started](./getting-started) for the discovery-first mental model
+- [Security Notes](./security) for PIN/password handling guidance
+- [Troubleshooting](./troubleshooting) for known platform gaps and error codes
