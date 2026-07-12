@@ -67,9 +67,15 @@ If you need to distinguish these in your UI, you can't do it from the JS `Transp
 
 USB devices are discovered through the standard Android USB host APIs. Permission is requested at runtime by the YubiKit Android SDK itself when you call `Core.startUsbDiscovery({ handlePermissions: true })` - there's no manifest permission for this (see [Installation](./installation) for why `USB_PERMISSION` isn't a real Android permission string).
 
-## NFC setup you still have to do yourself
+## iOS setup you still have to do yourself, per transport
 
-Neither platform's NFC support is "automatic." On iOS you must add `NFCReaderUsageDescription` and the NFC reader-session capability to your app (see [Installation](./installation)) - the library's podspec doesn't do this for you, and this library's own example app doesn't demonstrate it either. On Android, the NFC permission is already merged in via the library's manifest, so no extra manifest work is required there.
+Neither platform's transport support is fully "automatic." On iOS, depending on which transports you need:
+
+- **Lightning (5Ci):** add `com.yubico.ylp` under `UISupportedExternalAccessoryProtocols` in `Info.plist`.
+- **USB-C smart card (iOS 16+):** add the `com.apple.security.smartcard` entitlement.
+- **NFC:** add `NFCReaderUsageDescription`, the NFC reader-session capability, and the AID list (`com.apple.developer.nfc.readersession.iso7816.select-identifiers`).
+
+See [Installation](./installation) for the exact snippets. None of this is done by the library's podspec, and the library's own example app doesn't configure any of it either - its `Info.plist` has no NFC keys and its entitlements file is empty. On Android, the NFC permission is already merged in via the library's manifest, so no extra manifest work is required there.
 
 ## Related
 

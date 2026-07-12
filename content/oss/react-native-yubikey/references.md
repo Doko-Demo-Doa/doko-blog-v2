@@ -6,15 +6,15 @@ description: Links to the library, underlying SDKs, and relevant standards
 ## This library
 
 - Package: `@doko/react-native-yubikit` on npm
-- Repository: `https://github.com/Doko-Demo-Doah/react-native-yubikit`
+- Repository: `https://github.com/Doko-Demo-Doa/react-native-yubikit`
 - The repository's own `README.md` and `DRAFT_PLAN.md` are the most accurate source of truth for platform-support details - if anything on this site ever disagrees with the repo, trust the repo.
 
 ## Underlying native SDKs
 
 This library wraps these SDKs directly - it doesn't reimplement any cryptography or protocol logic itself:
 
-- [YubiKit iOS](https://developers.yubico.com/yubikit-ios/) - pinned to SDK 4.7.0 via a Podfile override (see [Installation](./installation))
-- [YubiKit Android](https://developers.yubico.com/yubikit-android/) - SDK 3.1.0
+- [YubiKit iOS](https://developers.yubico.com/yubikit-ios/) - pinned to SDK 4.7.0 via a Podfile override (see [Installation](./installation)); source at [github.com/Yubico/yubikit-ios](https://github.com/Yubico/yubikit-ios)
+- [YubiKit Android](https://developers.yubico.com/yubikit-android/) - SDK 3.1.0; source at [github.com/Yubico/yubikit-android](https://github.com/Yubico/yubikit-android)
 
 ## Standards implemented
 

@@ -14,7 +14,7 @@ description: System and device requirements for react-native-yubikit
 - **Xcode** recent enough to build RN 0.74+/New Architecture apps.
 - **Deployment target 16.4+ recommended.** USB-C "smart card" connections (`YKFSmartCardConnection`) are gated to iOS 16+ in the native code; Lightning/MFi accessory connections (`YKFAccessoryConnection`) work on older iOS versions supported by the underlying SDK.
 - **CocoaPods:** the library depends on the `YubiKit` pod, but the version published to the CocoaPods trunk (currently 4.4.0) is **too old** - this library needs 4.7.0+ APIs (PIV slot/bio metadata, key deletion, FIDO2 `minPinLength`, `Management.deviceReset`). You must override the Podfile to pull YubiKit iOS SDK 4.7.0 directly from GitHub. See [Installation](./installation) for the exact snippet.
-- **NFC entitlement + Info.plist keys are not added automatically.** You must add `NFCReaderUsageDescription` and the NFC reader-session capability yourself.
+- **None of the transport-specific entitlements are added automatically.** Depending on which transports you need, you must manually add: the `com.yubico.ylp` external accessory protocol (Lightning/5Ci), the `com.apple.security.smartcard` entitlement (USB-C on iOS 16+), and the NFC reader-session capability plus `NFCReaderUsageDescription` and AID list (NFC). See [Installation](./installation) for the exact snippets - the library's own example app doesn't configure any of these either.
 
 ## Android
 

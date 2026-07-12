@@ -50,7 +50,26 @@ cd ..
 
 Use iOS 16.4+ if you want USB-C "smart card" connections to work (`YKFSmartCardConnection` requires iOS 16+). Lightning/MFi accessory connections work on older iOS.
 
-### 3.4 Add NFC configuration (manual - not automated by the library)
+### 3.4 Enable Custom Lightning Protocol (required for YubiKey 5Ci over Lightning)
+
+The YubiKey 5Ci is an MFi external accessory that communicates over `iAP2`. Add `com.yubico.ylp` under **Supported external accessory protocols** in `Info.plist`:
+
+```xml
+<key>UISupportedExternalAccessoryProtocols</key>
+<array>
+  <string>com.yubico.ylp</string>
+</array>
+```
+
+Skip this if you don't need to support the 5Ci over Lightning - it isn't required for USB-C or NFC connections.
+
+### 3.5 Enable TKSmartCard support (required for USB-C on iOS 16+)
+
+To support YubiKeys connected via USB-C on iOS 16+, add the `com.apple.security.smartcard` entitlement to your app target (Signing & Capabilities → + Capability → "Smart Card"). This connection only supports smart-card-based applications on the key (OATH, PIV, OpenPGP on Android-paired flows, etc.) - not U2F, FIDO2, or OTP over that transport.
+
+Neither this entitlement nor the Lightning protocol string is added automatically by the library or its podspec, and the library's own example app doesn't configure either of them - you have to add both yourself in your app target if you need Lightning or USB-C support.
+
+### 3.6 Grant access to NFC (manual - not automated by the library)
 
 If you want NFC discovery, add to `Info.plist`:
 
@@ -61,28 +80,35 @@ If you want NFC discovery, add to `Info.plist`:
 <array>
   <string>TAG</string>
 </array>
+<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+<array>
+  <string>A000000527471117</string> <!-- YubiKey Management Application AID -->
+  <string>A0000006472F0001</string> <!-- FIDO/U2F AID -->
+  <string>A0000005272101</string>   <!-- OATH AID -->
+  <string>A000000308</string>       <!-- PIV AID -->
+  <string>A000000527200101</string> <!-- YubiKey application/OTP AID (HMAC-SHA1 challenge-response) -->
+  <string>A000000151000000</string> <!-- YubiKey Security Domain AID -->
+</array>
 ```
 
-And enable the **"Near Field Communication Tag Reading"** capability in Xcode (Signing & Capabilities → + Capability). Depending on how your app reads NFC tags, you may also need `com.apple.developer.nfc.readersession.iso7816.select-identifiers` - check Apple's Core NFC documentation for your exact use case.
+And enable the **"Near Field Communication Tag Reading"** capability in Xcode (Signing & Capabilities → + Capability) - this adds `com.apple.developer.nfc.readersession.formats` to your entitlements automatically, but you still need to add the AID list and usage description yourself. The AID list tells iOS which applications on the YubiKey your app is allowed to select over NFC; omit an AID and NFC sessions targeting that application will fail to connect.
 
-None of this is added automatically by the library or its podspec - you have to do it yourself in your app target.
+None of this - Lightning protocol, smart card entitlement, or NFC configuration - is added automatically by the library, its podspec, or its own example app. You have to configure all three yourself in your app target, based on which transports you actually need.
+
+### 3.7 Camera access - not applicable
+
+The upstream YubiKit iOS SDK has an optional camera permission for scanning QR-code OTPs. This library doesn't implement QR-code scanning at all (see the [feature coverage table](./index)), so there's nothing to configure here - skip it.
 
 ## 4. Android setup
 
-### 4.1 Nothing to add to `build.gradle` manually
-
-The library's own `android/build.gradle` already declares its YubiKit Android SDK 3.1.0 dependencies and is picked up automatically through autolinking/Codegen. You just need your app's `minSdkVersion` to be 24+ and `compileSdkVersion` to be 36 (to match what the library compiles against).
-
-### 4.2 Nothing to add to `AndroidManifest.xml` manually
-
-The library's own manifest already declares:
+There's nothing to add manually. The library's own `android/build.gradle` already declares its YubiKit Android SDK 3.1.0 dependencies (picked up automatically through autolinking/Codegen), and its `AndroidManifest.xml` already declares:
 
 ```xml
 <uses-feature android:name="android.hardware.usb.host" android:required="false" />
 <uses-permission android:name="android.permission.NFC" />
 ```
 
-These merge into your app automatically via the manifest merger. You do **not** need to add NFC permissions yourself, and you should **not** add a `USB_PERMISSION` entry - it isn't a real Android permission constant. USB host access on Android is granted at runtime through `UsbManager`'s own permission-request flow (handled internally by the YubiKit Android SDK), not through a manifest declaration.
+Both merge into your app automatically. You just need your app's `minSdkVersion` to be 24+ and `compileSdkVersion` to be 36 (to match what the library compiles against) - you do **not** need to add NFC permissions yourself, and you should **not** add a `USB_PERMISSION` entry, since it isn't a real Android permission constant. USB host access on Android is granted at runtime through `UsbManager`'s own permission-request flow (handled internally by the YubiKit Android SDK), not through a manifest declaration.
 
 ## 5. Verify the install
 
