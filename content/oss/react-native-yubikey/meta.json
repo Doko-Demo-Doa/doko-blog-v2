@@ -1,0 +1,17 @@
+{
+  "title": "React Native YubiKey",
+  "icon": "Lock",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "getting-started",
+    "requirements",
+    "installation",
+    "mfi-lightning",
+    "usage",
+    "security",
+    "advanced",
+    "troubleshooting",
+    "references"
+  ]
+}

@@ -11,6 +11,10 @@ export const docs = defineDocs({
   dir: "content/docs",
 });
 
+export const oss = defineDocs({
+  dir: "content/oss",
+});
+
 export const blog = defineCollections({
   type: "doc",
   dir: "content/blog",

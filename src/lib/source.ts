@@ -1,4 +1,4 @@
-import { blog as blogPosts, docs } from "fumadocs-mdx:collections/server";
+import { blog as blogPosts, docs, oss } from "fumadocs-mdx:collections/server";
 import { loader } from "fumadocs-core/source";
 import { toFumadocsSource } from "fumadocs-mdx/runtime/server";
 import { icons } from "lucide-react";
@@ -22,4 +22,10 @@ export const source = loader({
 export const blog = loader({
   baseUrl: "/blog",
   source: toFumadocsSource(blogPosts, []),
+});
+
+export const ossSource = loader({
+  baseUrl: "/oss",
+  source: oss.toFumadocsSource(),
+  icon: resolveIcon,
 });
