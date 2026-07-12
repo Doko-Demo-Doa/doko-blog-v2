@@ -1,7 +1,11 @@
 import { createSearchAPI } from "fumadocs-core/search/server";
-import { blog, source } from "@/lib/source";
+import { blog, ossSource, source } from "@/lib/source";
 
-const combinedSrcs = [...source.getPages(), ...blog.getPages()];
+const combinedSrcs = [
+  ...source.getPages(),
+  ...blog.getPages(),
+  ...ossSource.getPages(),
+];
 
 export const { GET } = createSearchAPI("advanced", {
   language: "english",
