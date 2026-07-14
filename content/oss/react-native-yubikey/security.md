@@ -49,7 +49,7 @@ Store any session tokens your server issues after a successful YubiKey-backed lo
 
 ## Don't leak information in error messages
 
-This library's own errors are one of a handful of generic codes (`CONNECTION_ERROR`, `OATH_ERROR`, `PIV_ERROR`, `FIDO_ERROR`, etc. - see [Usage](./usage)) with an SDK-provided message string. Be deliberate about what you surface to end users from these - "Invalid PIN" is fine, but don't propagate low-level SDK messages that might reveal internal state to a UI a bystander could see over someone's shoulder.
+This library's own errors are one of a handful of generic codes (`CONNECTION_ERROR`, `OATH_ERROR`, `PIV_ERROR`, `FIDO_ERROR`, etc. - see [Usage](./usage.md)) with an SDK-provided message string. Be deliberate about what you surface to end users from these - "Invalid PIN" is fine, but don't propagate low-level SDK messages that might reveal internal state to a UI a bystander could see over someone's shoulder.
 
 ## Known platform gaps that affect your security design
 
@@ -59,5 +59,5 @@ This library's own errors are one of a handful of generic codes (`CONNECTION_ERR
 
 ## Related
 
-- [Usage Examples](./usage) for the exact function signatures referenced above
-- [Troubleshooting](./troubleshooting) for the full error-code list
+- [Usage Examples](./usage.md) for the exact function signatures referenced above
+- [Troubleshooting](./troubleshooting.md) for the full error-code list

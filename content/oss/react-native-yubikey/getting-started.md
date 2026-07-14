@@ -11,7 +11,7 @@ npm install @doko/react-native-yubikit
 yarn add @doko/react-native-yubikit
 ```
 
-Then complete the platform setup in [Installation](./installation) - iOS needs a Podfile override before it will build.
+Then complete the platform setup in [Installation](./installation.md) - iOS needs a Podfile override before it will build.
 
 ## The fastest path: `YubiKeyProvider` + `useYubiKey()`
 
@@ -49,7 +49,7 @@ function DeviceScreen() {
 
 `useYubiKey()` must be called under a `<YubiKeyProvider>` - it throws otherwise. The provider also stops any discovery it started when it unmounts, so it can't leave a dangling USB/NFC session running after your component tree goes away.
 
-If you need different state shape (e.g. starting NFC and USB together automatically, or keeping every attached device instead of most-recent-first), see [Advanced Patterns](./advanced) for building a custom hook around `Core.addYubiKeyListener` instead.
+If you need different state shape (e.g. starting NFC and USB together automatically, or keeping every attached device instead of most-recent-first), see [Advanced Patterns](./advanced.md) for building a custom hook around `Core.addYubiKeyListener` instead.
 
 ## The mental model
 
@@ -162,7 +162,7 @@ try {
 
 ## Next steps
 
-- [Requirements](./requirements)
-- [Connectivity: USB, NFC & Accessory](./mfi-lightning)
-- [Usage Examples](./usage)
-- [Troubleshooting](./troubleshooting)
+- [Requirements](./requirements.md)
+- [Connectivity: USB, NFC & Accessory](./mfi-lightning.md)
+- [Usage Examples](./usage.md)
+- [Troubleshooting](./troubleshooting.md)

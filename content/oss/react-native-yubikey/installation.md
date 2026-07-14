@@ -97,7 +97,7 @@ None of this - Lightning protocol, smart card entitlement, or NFC configuration 
 
 ### 3.7 Camera access - not applicable
 
-The upstream YubiKit iOS SDK has an optional camera permission for scanning QR-code OTPs. This library doesn't implement QR-code scanning at all (see the [feature coverage table](./index)), so there's nothing to configure here - skip it.
+The upstream YubiKit iOS SDK has an optional camera permission for scanning QR-code OTPs. This library doesn't implement QR-code scanning at all (see the [feature coverage table](./index.md)), so there's nothing to configure here - skip it.
 
 ## 4. Android setup
 
@@ -127,6 +127,6 @@ Plug in (or NFC-tap) a YubiKey on a real device - the simulator/emulator cannot 
 
 ## Next steps
 
-- [Getting Started](./getting-started)
-- [Connectivity: USB, NFC & Accessory](./mfi-lightning)
-- [Usage Examples](./usage)
+- [Getting Started](./getting-started.md)
+- [Connectivity: USB, NFC & Accessory](./mfi-lightning.md)
+- [Usage Examples](./usage.md)

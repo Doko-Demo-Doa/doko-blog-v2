@@ -204,6 +204,6 @@ On Android, some programmer-error conditions (unknown connection type, missing A
 
 ## Related
 
-- [Getting Started](./getting-started) for the discovery-first mental model
-- [Security Notes](./security) for PIN/password handling guidance
-- [Troubleshooting](./troubleshooting) for known platform gaps and error codes
+- [Getting Started](./getting-started.md) for the discovery-first mental model
+- [Security Notes](./security.md) for PIN/password handling guidance
+- [Troubleshooting](./troubleshooting.md) for known platform gaps and error codes

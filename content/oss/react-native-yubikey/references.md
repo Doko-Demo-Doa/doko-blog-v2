@@ -13,7 +13,7 @@ description: Links to the library, underlying SDKs, and relevant standards
 
 This library wraps these SDKs directly - it doesn't reimplement any cryptography or protocol logic itself:
 
-- [YubiKit iOS](https://developers.yubico.com/yubikit-ios/) - pinned to SDK 4.7.0 via a Podfile override (see [Installation](./installation)); source at [github.com/Yubico/yubikit-ios](https://github.com/Yubico/yubikit-ios)
+- [YubiKit iOS](https://developers.yubico.com/yubikit-ios/) - pinned to SDK 4.7.0 via a Podfile override (see [Installation](./installation.md)); source at [github.com/Yubico/yubikit-ios](https://github.com/Yubico/yubikit-ios)
 - [YubiKit Android](https://developers.yubico.com/yubikit-android/) - SDK 3.1.0; source at [github.com/Yubico/yubikit-android](https://github.com/Yubico/yubikit-android)
 
 ## Standards implemented
@@ -24,11 +24,11 @@ This library wraps these SDKs directly - it doesn't reimplement any cryptography
 - NIST SP 800-73-4 (PIV) - via the `Piv` module
 - OpenPGP card specification - via the `OpenPgp` module (Android only)
 
-Not implemented by this library: classic FIDO U2F/CTAP1, QR-code scanning, NFC static-OTP tag reading. See the [index page](./index) for the full feature-coverage table.
+Not implemented by this library: classic FIDO U2F/CTAP1, QR-code scanning, NFC static-OTP tag reading. See the [index page](./index.md) for the full feature-coverage table.
 
 ## Apple developer docs (for the manual iOS setup steps)
 
-- [Core NFC framework](https://developer.apple.com/documentation/corenfc) - for the `NFCReaderUsageDescription` / capability setup in [Installation](./installation)
+- [Core NFC framework](https://developer.apple.com/documentation/corenfc) - for the `NFCReaderUsageDescription` / capability setup in [Installation](./installation.md)
 - [Apple MFi Program](https://developer.apple.com/mfi/) - background on the Lightning accessory certification the YubiKey 5Ci uses
 
 ## Android developer docs
@@ -59,8 +59,8 @@ Not implemented by this library: classic FIDO U2F/CTAP1, QR-code scanning, NFC s
 
 ## Related pages
 
-- [What is this?](./index)
-- [Requirements](./requirements)
-- [Installation](./installation)
-- [Usage Examples](./usage)
-- [Troubleshooting](./troubleshooting)
+- [What is this?](./index.md)
+- [Requirements](./requirements.md)
+- [Installation](./installation.md)
+- [Usage Examples](./usage.md)
+- [Troubleshooting](./troubleshooting.md)

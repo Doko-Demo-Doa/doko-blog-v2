@@ -31,7 +31,7 @@ On Android, some programmer-error conditions bypass the reject path entirely and
 
 ## "OPENPGP_ERROR: Not implemented on iOS"
 
-This is expected - the YubiKit iOS SDK has no OpenPGP session at all. Every `OpenPgp.*` function rejects on iOS unconditionally. There is no workaround within this library; OpenPGP only works on Android. Guard the call with a platform check instead of trying to recover from the rejection (see [Usage](./usage)).
+This is expected - the YubiKit iOS SDK has no OpenPGP session at all. Every `OpenPgp.*` function rejects on iOS unconditionally. There is no workaround within this library; OpenPGP only works on Android. Guard the call with a platform check instead of trying to recover from the rejection (see [Usage](./usage.md)).
 
 ## "YUBIOTP_ERROR: Not implemented on iOS" for most YubiOtp calls
 
@@ -59,11 +59,11 @@ On iOS, this only works for YubiKey Bio - Multi-Protocol Edition running firmwar
 
 ## Build fails against the CocoaPods `YubiKit` pod
 
-If your build fails with missing symbols (PIV slot/bio metadata, key deletion, FIDO2 `minPinLength`, `Management.deviceReset`), you likely have the CocoaPods-trunk `YubiKit` pod (4.4.0), which is older than what this library needs. You must override your Podfile to pull YubiKit iOS SDK 4.7.0 from GitHub directly - see [Installation](./installation) for the exact snippet. Run `pod install` again after adding the override.
+If your build fails with missing symbols (PIV slot/bio metadata, key deletion, FIDO2 `minPinLength`, `Management.deviceReset`), you likely have the CocoaPods-trunk `YubiKit` pod (4.4.0), which is older than what this library needs. You must override your Podfile to pull YubiKit iOS SDK 4.7.0 from GitHub directly - see [Installation](./installation.md) for the exact snippet. Run `pod install` again after adding the override.
 
 ## NFC doesn't work on iOS at all
 
-Check that you've manually added `NFCReaderUsageDescription` and the "Near Field Communication Tag Reading" capability - neither is added automatically by the library or its podspec. See [Installation](./installation).
+Check that you've manually added `NFCReaderUsageDescription` and the "Near Field Communication Tag Reading" capability - neither is added automatically by the library or its podspec. See [Installation](./installation.md).
 
 ## New Architecture not enabled
 
@@ -82,6 +82,6 @@ This isn't a real Android permission constant, and adding it does nothing. USB h
 
 ## Related
 
-- [Requirements](./requirements) for the full compatibility matrix
-- [Usage Examples](./usage) for the real function signatures
-- [Connectivity](./mfi-lightning) for transport-specific behavior
+- [Requirements](./requirements.md) for the full compatibility matrix
+- [Usage Examples](./usage.md) for the real function signatures
+- [Connectivity](./mfi-lightning.md) for transport-specific behavior

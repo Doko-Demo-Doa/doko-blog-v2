@@ -11,7 +11,7 @@ The library is split into 8 independent native modules, exposed as namespaces fr
 import { Core, Support, Management, Oath, Piv, OpenPgp, YubiOtp, Fido } from '@doko/react-native-yubikit';
 ```
 
-There is no `YubiKeyReader` class and no default export - the module functions are plain exports grouped by namespace, plus the types from `src/types.ts` re-exported at the top level. The library does ship one convenience on top of that: a `YubiKeyProvider` + `useYubiKey()` hook that handles discovery state (device list, selection, USB/NFC discovery toggles) for you - see [Getting Started](./getting-started) for the fastest path in, or [Advanced Patterns](./advanced) if you'd rather manage that state yourself around `Core`.
+There is no `YubiKeyReader` class and no default export - the module functions are plain exports grouped by namespace, plus the types from `src/types.ts` re-exported at the top level. The library does ship one convenience on top of that: a `YubiKeyProvider` + `useYubiKey()` hook that handles discovery state (device list, selection, USB/NFC discovery toggles) for you - see [Getting Started](./getting-started.md) for the fastest path in, or [Advanced Patterns](./advanced.md) if you'd rather manage that state yourself around `Core`.
 
 ## Feature coverage
 
@@ -36,19 +36,19 @@ There is **no classic FIDO U2F (CTAP1) API** - only FIDO2/CTAP2 (`Fido.makeCrede
 - iOS 16.4+ recommended (USB-C smart card connections require iOS 16+; Lightning/accessory YubiKeys work on older iOS)
 - Android `minSdkVersion` 24
 
-See [Requirements](./requirements) for the full breakdown, and [Installation](./installation) for the real setup steps (including a required Podfile override for iOS).
+See [Requirements](./requirements.md) for the full breakdown, and [Installation](./installation.md) for the real setup steps (including a required Podfile override for iOS).
 
 ## Quick links
 
-- [Getting Started](./getting-started)
-- [Requirements](./requirements)
-- [Installation](./installation)
-- [Connectivity: USB, NFC & Accessory](./mfi-lightning)
-- [Usage Examples](./usage)
-- [Security Notes](./security)
-- [Advanced Patterns](./advanced)
-- [Troubleshooting](./troubleshooting)
-- [References](./references)
+- [Getting Started](./getting-started.md)
+- [Requirements](./requirements.md)
+- [Installation](./installation.md)
+- [Connectivity: USB, NFC & Accessory](./mfi-lightning.md)
+- [Usage Examples](./usage.md)
+- [Security Notes](./security.md)
+- [Advanced Patterns](./advanced.md)
+- [Troubleshooting](./troubleshooting.md)
+- [References](./references.md)
 
 ## Installation
 
@@ -58,4 +58,4 @@ npm install @doko/react-native-yubikit
 yarn add @doko/react-native-yubikit
 ```
 
-Then follow [Installation](./installation) - iOS in particular needs a Podfile override, since the CocoaPods-trunk `YubiKit` pod is older than what this library requires.
+Then follow [Installation](./installation.md) - iOS in particular needs a Podfile override, since the CocoaPods-trunk `YubiKit` pod is older than what this library requires.

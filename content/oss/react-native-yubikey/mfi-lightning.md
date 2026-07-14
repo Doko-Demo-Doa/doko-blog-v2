@@ -65,7 +65,7 @@ If you need to distinguish these in your UI, you can't do it from the JS `Transp
 
 ## Android: USB OTG
 
-USB devices are discovered through the standard Android USB host APIs. Permission is requested at runtime by the YubiKit Android SDK itself when you call `Core.startUsbDiscovery({ handlePermissions: true })` - there's no manifest permission for this (see [Installation](./installation) for why `USB_PERMISSION` isn't a real Android permission string).
+USB devices are discovered through the standard Android USB host APIs. Permission is requested at runtime by the YubiKit Android SDK itself when you call `Core.startUsbDiscovery({ handlePermissions: true })` - there's no manifest permission for this (see [Installation](./installation.md) for why `USB_PERMISSION` isn't a real Android permission string).
 
 ## iOS setup you still have to do yourself, per transport
 
@@ -75,10 +75,10 @@ Neither platform's transport support is fully "automatic." On iOS, depending on 
 - **USB-C smart card (iOS 16+):** add the `com.apple.security.smartcard` entitlement.
 - **NFC:** add `NFCReaderUsageDescription`, the NFC reader-session capability, and the AID list (`com.apple.developer.nfc.readersession.iso7816.select-identifiers`).
 
-See [Installation](./installation) for the exact snippets. None of this is done by the library's podspec, and the library's own example app doesn't configure any of it either - its `Info.plist` has no NFC keys and its entitlements file is empty. On Android, the NFC permission is already merged in via the library's manifest, so no extra manifest work is required there.
+See [Installation](./installation.md) for the exact snippets. None of this is done by the library's podspec, and the library's own example app doesn't configure any of it either - its `Info.plist` has no NFC keys and its entitlements file is empty. On Android, the NFC permission is already merged in via the library's manifest, so no extra manifest work is required there.
 
 ## Related
 
-- [Requirements](./requirements) for the device-compatibility table
-- [Installation](./installation) for the exact Info.plist / Podfile steps
-- [Usage Examples](./usage) for a full discover-then-operate flow
+- [Requirements](./requirements.md) for the device-compatibility table
+- [Installation](./installation.md) for the exact Info.plist / Podfile steps
+- [Usage Examples](./usage.md) for a full discover-then-operate flow

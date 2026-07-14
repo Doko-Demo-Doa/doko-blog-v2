@@ -3,7 +3,7 @@ title: Advanced Patterns
 description: Patterns you can build on top of the library - not built-in APIs
 ---
 
-Most of this page is not a shipped API - the library exports plain namespaced functions and no connection pool or batching helper, so if you want those conveniences, you build them yourself around `Core` and the module functions. The one exception is discovery/device-selection state, which the library does ship a ready-made `YubiKeyProvider` + `useYubiKey()` for (see [Getting Started](./getting-started)). This page shows patterns that are consistent with the real API surface described in [Usage](./usage).
+Most of this page is not a shipped API - the library exports plain namespaced functions and no connection pool or batching helper, so if you want those conveniences, you build them yourself around `Core` and the module functions. The one exception is discovery/device-selection state, which the library does ship a ready-made `YubiKeyProvider` + `useYubiKey()` for (see [Getting Started](./getting-started.md)). This page shows patterns that are consistent with the real API surface described in [Usage](./usage.md).
 
 ## When to build your own discovery hook instead of `useYubiKey`
 
@@ -113,5 +113,5 @@ const response = await withSmartCardConnection(device, (handle) =>
 
 ## Related
 
-- [Usage Examples](./usage) for the real function signatures these patterns build on
-- [Troubleshooting](./troubleshooting) for platform gaps to guard against
+- [Usage Examples](./usage.md) for the real function signatures these patterns build on
+- [Troubleshooting](./troubleshooting.md) for platform gaps to guard against

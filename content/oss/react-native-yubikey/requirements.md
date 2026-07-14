@@ -7,14 +7,14 @@ description: System and device requirements for react-native-yubikit
 
 - **React Native 0.74+**, with the **New Architecture (Fabric/TurboModules) enabled**.
 - There is no old-bridge/Paper support at all - the library is built exclusively as a set of TurboModules with Codegen specs. If your app hasn't turned on the New Architecture, none of this will link.
-- The library ships its own `YubiKeyProvider` + `useYubiKey()` hook for discovery state (see [Getting Started](./getting-started)); you can still build a custom one around `Core.addYubiKeyListener` if you need different state shape (see [Advanced Patterns](./advanced)). The hook covers basic usage of `Core` module.
+- The library ships its own `YubiKeyProvider` + `useYubiKey()` hook for discovery state (see [Getting Started](./getting-started.md)); you can still build a custom one around `Core.addYubiKeyListener` if you need different state shape (see [Advanced Patterns](./advanced.md)). The hook covers basic usage of `Core` module.
 
 ## iOS
 
 - **Xcode** recent enough to build RN 0.74+/New Architecture apps.
 - **Deployment target 16.4+ recommended.** USB-C "smart card" connections (`YKFSmartCardConnection`) are gated to iOS 16+ in the native code; Lightning/MFi accessory connections (`YKFAccessoryConnection`) work on older iOS versions supported by the underlying SDK.
-- **CocoaPods:** the library depends on the `YubiKit` pod, but the version published to the CocoaPods trunk (currently 4.4.0) is **too old** - this library needs 4.7.0+ APIs (PIV slot/bio metadata, key deletion, FIDO2 `minPinLength`, `Management.deviceReset`). You must override the Podfile to pull YubiKit iOS SDK 4.7.0 directly from GitHub. See [Installation](./installation) for the exact snippet.
-- **None of the transport-specific entitlements are added automatically.** Depending on which transports you need, you must manually add: the `com.yubico.ylp` external accessory protocol (Lightning/5Ci), the `com.apple.security.smartcard` entitlement (USB-C on iOS 16+), and the NFC reader-session capability plus `NFCReaderUsageDescription` and AID list (NFC). See [Installation](./installation) for the exact snippets - the library's own example app doesn't configure any of these either.
+- **CocoaPods:** the library depends on the `YubiKit` pod, but the version published to the CocoaPods trunk (currently 4.4.0) is **too old** - this library needs 4.7.0+ APIs (PIV slot/bio metadata, key deletion, FIDO2 `minPinLength`, `Management.deviceReset`). You must override the Podfile to pull YubiKit iOS SDK 4.7.0 directly from GitHub. See [Installation](./installation.md) for the exact snippet.
+- **None of the transport-specific entitlements are added automatically.** Depending on which transports you need, you must manually add: the `com.yubico.ylp` external accessory protocol (Lightning/5Ci), the `com.apple.security.smartcard` entitlement (USB-C on iOS 16+), and the NFC reader-session capability plus `NFCReaderUsageDescription` and AID list (NFC). See [Installation](./installation.md) for the exact snippets - the library's own example app doesn't configure any of these either.
 
 ## Android
 
@@ -33,7 +33,7 @@ description: System and device requirements for react-native-yubikit
 | NFC                       | iOS (CoreNFC-capable devices), Android (NFC-capable devices) | Requires manual Info.plist / capability setup on iOS                                                                                             |
 | USB OTG                   | Android only                                                 | Handled by YubiKit Android's own USB host + permission flow                                                                                      |
 
-Any YubiKey with the relevant application (OATH, PIV, OpenPGP, YubiOTP, FIDO2) enabled should work, subject to the per-module iOS gaps listed on the [index page](./index). Because there's no CTAP1/U2F implementation, YubiKeys or security keys that only speak classic U2F (no CTAP2) won't work with the `Fido` module.
+Any YubiKey with the relevant application (OATH, PIV, OpenPGP, YubiOTP, FIDO2) enabled should work, subject to the per-module iOS gaps listed on the [index page](./index.md). Because there's no CTAP1/U2F implementation, YubiKeys or security keys that only speak classic U2F (no CTAP2) won't work with the `Fido` module.
 
 ## Verification checklist
 
