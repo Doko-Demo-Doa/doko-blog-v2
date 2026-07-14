@@ -11,7 +11,7 @@ The library is split into 8 independent native modules, exposed as namespaces fr
 import { Core, Support, Management, Oath, Piv, OpenPgp, YubiOtp, Fido } from '@doko/react-native-yubikit';
 ```
 
-There is no `YubiKeyReader` class, no React hook shipped by the library, and no default export - everything is a plain exported function grouped by namespace, plus the types from `src/types.ts` re-exported at the top level.
+There is no `YubiKeyReader` class and no default export - the module functions are plain exports grouped by namespace, plus the types from `src/types.ts` re-exported at the top level. The library does ship one convenience on top of that: a `YubiKeyProvider` + `useYubiKey()` hook that handles discovery state (device list, selection, USB/NFC discovery toggles) for you - see [Getting Started](./getting-started) for the fastest path in, or [Advanced Patterns](./advanced) if you'd rather manage that state yourself around `Core`.
 
 ## Feature coverage
 

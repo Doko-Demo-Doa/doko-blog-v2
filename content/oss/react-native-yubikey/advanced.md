@@ -3,18 +3,18 @@ title: Advanced Patterns
 description: Patterns you can build on top of the library - not built-in APIs
 ---
 
-Nothing in this page is a shipped API. The library exports plain namespaced functions and no class, hook, connection pool, or batching helper - if you want these conveniences, you build them yourself around `Core` and the module functions. This page shows patterns that are consistent with the real API surface described in [Usage](./usage).
+Most of this page is not a shipped API - the library exports plain namespaced functions and no connection pool or batching helper, so if you want those conveniences, you build them yourself around `Core` and the module functions. The one exception is discovery/device-selection state, which the library does ship a ready-made `YubiKeyProvider` + `useYubiKey()` for (see [Getting Started](./getting-started)). This page shows patterns that are consistent with the real API surface described in [Usage](./usage).
 
-## Building your own `useYubiKey` hook
+## When to build your own discovery hook instead of `useYubiKey`
 
-The library doesn't export a hook (the one shown in this project's own example app lives in the example's `context/`, not in the package). A minimal version:
+The shipped `useYubiKey()` covers the common case: device list, auto-selection, USB/NFC discovery toggles, and the last error event. Reach for your own hook around `Core.addYubiKeyListener` when you need something the shipped one doesn't do - for example, starting USB *and* NFC discovery together by default, keeping every attached device instead of most-recent-first ordering, or a different selection strategy:
 
 ```typescript
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Core } from '@doko/react-native-yubikit';
 import type { YubiKeyDevice, YubiKeyEvent } from '@doko/react-native-yubikit';
 
-export function useYubiKey() {
+export function useAllTransportsYubiKey() {
   const [devices, setDevices] = useState<YubiKeyDevice[]>([]);
   const [lastError, setLastError] = useState<string | null>(null);
 
@@ -29,6 +29,8 @@ export function useYubiKey() {
       }
     });
 
+    // Unlike the shipped hook (which only starts a transport when you call
+    // startUsbDiscovery/startNfcDiscovery yourself), this starts both at once.
     Core.startUsbDiscovery({ handlePermissions: true });
     Core.startNfcDiscovery();
 

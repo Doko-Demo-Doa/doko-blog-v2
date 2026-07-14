@@ -7,7 +7,7 @@ description: System and device requirements for react-native-yubikit
 
 - **React Native 0.74+**, with the **New Architecture (Fabric/TurboModules) enabled**.
 - There is no old-bridge/Paper support at all - the library is built exclusively as a set of TurboModules with Codegen specs. If your app hasn't turned on the New Architecture, none of this will link.
-- No hooks are exported by the library. If you want a `useYubiKey`-style hook, you build it yourself around `Core.addYubiKeyListener` (see [Usage](./usage)).
+- The library ships its own `YubiKeyProvider` + `useYubiKey()` hook for discovery state (see [Getting Started](./getting-started)); you can still build a custom one around `Core.addYubiKeyListener` if you need different state shape (see [Advanced Patterns](./advanced)). The hook covers basic usage of `Core` module.
 
 ## iOS
 
@@ -26,12 +26,12 @@ description: System and device requirements for react-native-yubikit
 
 ## Device compatibility
 
-| Connection | Platform | Notes |
-|---|---|---|
-| USB-C ("smart card") | iOS 16+, Android (minSdk 24+) | `YKFSmartCardConnection` on iOS |
-| Lightning (MFi accessory) | iOS (any version supported by YubiKit 4.7.0) | `YKFAccessoryConnection` on iOS; the JS `Transport` type just reports `'usb'` - it doesn't distinguish Lightning-accessory from USB-C-smart-card |
-| NFC | iOS (CoreNFC-capable devices), Android (NFC-capable devices) | Requires manual Info.plist / capability setup on iOS |
-| USB OTG | Android only | Handled by YubiKit Android's own USB host + permission flow |
+| Connection                | Platform                                                     | Notes                                                                                                                                            |
+| ------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| USB-C ("smart card")      | iOS 16+, Android (minSdk 24+)                                | `YKFSmartCardConnection` on iOS                                                                                                                  |
+| Lightning (MFi accessory) | iOS (any version supported by YubiKit 4.7.0)                 | `YKFAccessoryConnection` on iOS; the JS `Transport` type just reports `'usb'` - it doesn't distinguish Lightning-accessory from USB-C-smart-card |
+| NFC                       | iOS (CoreNFC-capable devices), Android (NFC-capable devices) | Requires manual Info.plist / capability setup on iOS                                                                                             |
+| USB OTG                   | Android only                                                 | Handled by YubiKit Android's own USB host + permission flow                                                                                      |
 
 Any YubiKey with the relevant application (OATH, PIV, OpenPGP, YubiOTP, FIDO2) enabled should work, subject to the per-module iOS gaps listed on the [index page](./index). Because there's no CTAP1/U2F implementation, YubiKeys or security keys that only speak classic U2F (no CTAP2) won't work with the `Fido` module.
 
