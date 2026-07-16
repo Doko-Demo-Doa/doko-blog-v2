@@ -1,7 +1,30 @@
 ---
 title: Installation
-description: Real, verified installation steps for react-native-yubikit
+description: Installation steps for react-native-yubikit
 ---
+
+## 0. Prepare
+
+Due to involving another device for development: The physical Yubikey, you may want to enable remote debugging on Android and iOS.
+
+### On Android
+
+- Enable Developer mode (of course).
+- Go to Developer Options -> Wireless debugging
+- Turn on the Wireless debugging switch
+- Now you can either Pair with pairing code or QR code
+- Open Android Studio, then open Device Manager, click the icon to show the QR code
+
+![wireless-debugging](/img/rn-yubikit/wireless-debugging.png)
+
+### On iOS
+
+- Launch Xcode
+- Window -> Devices and Simulators
+- Choose Devices tab and connect your phone
+- Proceed to set your phone as a valid debugging device
+
+![xcode-devices](/img/rn-yubikit/xcode-devices-simulators.png)
 
 ## 1. Install the package
 
@@ -113,11 +136,11 @@ Both merge into your app automatically. You just need your app's `minSdkVersion`
 ## 5. Verify the install
 
 ```typescript
-import { Core } from '@doko/react-native-yubikit';
+import { Core } from "@doko/react-native-yubikit";
 
 // Start USB discovery and see if a listener fires when you plug something in
 const subscription = Core.addYubiKeyListener((event) => {
-  console.log('YubiKey event:', event);
+  console.log("YubiKey event:", event);
 });
 
 Core.startUsbDiscovery({ handlePermissions: true });
