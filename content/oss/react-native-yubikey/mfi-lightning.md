@@ -75,7 +75,7 @@ Neither platform's transport support is fully "automatic." On iOS, depending on 
 - **USB-C smart card (iOS 16+):** add the `com.apple.security.smartcard` entitlement.
 - **NFC:** add `NFCReaderUsageDescription`, the NFC reader-session capability, and the AID list (`com.apple.developer.nfc.readersession.iso7816.select-identifiers`).
 
-See [Installation](./installation.md) for the exact snippets. None of this is done by the library's podspec, and the library's own example app doesn't configure any of it either - its `Info.plist` has no NFC keys and its entitlements file is empty. On Android, the NFC permission is already merged in via the library's manifest, so no extra manifest work is required there.
+See [Installation](./installation.md) for the exact snippets. None of this is done by the library's podspec - you have to configure it in your own app. The library's own example app does configure NFC (`NFCReaderUsageDescription`, the reader-session capability, and the AID list, via `expo.ios.infoPlist`/`expo.ios.entitlements` in `example/app.json`), but not the Lightning protocol string or the smart-card entitlement, since its own test hardware is NFC/USB-C only. On Android, the NFC permission is already merged in via the library's manifest, so no extra manifest work is required there.
 
 ## Related
 
