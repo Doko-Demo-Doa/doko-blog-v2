@@ -1,0 +1,12 @@
+{
+  "title": "React Native Shake",
+  "icon": "Smartphone",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "getting-started",
+    "usage",
+    "api",
+    "troubleshooting"
+  ]
+}
