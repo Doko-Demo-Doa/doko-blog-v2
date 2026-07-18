@@ -1,0 +1,12 @@
+{
+  "title": "React Native Sweet Alert",
+  "icon": "MessageCircleWarning",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "getting-started",
+    "usage",
+    "api",
+    "troubleshooting"
+  ]
+}
