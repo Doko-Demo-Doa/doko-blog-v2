@@ -1,0 +1,21 @@
+{
+  "title": "React Native PDF Editor",
+  "icon": "FileText",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "requirements",
+    "installation",
+    "getting-started",
+    "document-editing",
+    "drawing",
+    "rendering",
+    "forms-annotations-metadata",
+    "encryption",
+    "signing",
+    "signature-verification",
+    "api",
+    "troubleshooting",
+    "references"
+  ]
+}
