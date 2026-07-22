@@ -74,6 +74,20 @@ if (field.fieldType === 'TextBox') {
 
 That is a successful byte-range integrity check, but not full certificate trust validation. You still need to validate certificate chain, trusted roots, validity dates, revocation, and your own business policy.
 
+## Signature verification returns `Invalid`
+
+`Invalid` means the CMS signature does not cryptographically match the bytes covered by `/ByteRange`. It is not the same as an untrusted certificate.
+
+Common causes:
+
+- the PDF was modified after signing
+- the verifier is pointed at a different file than the one that was signed
+- your signer signed the wrong payload shape for its algorithm or hardware API
+- the returned signature bytes were truncated or otherwise transformed
+- RSA-2048 or larger signatures were produced with an older PoDoFo artifact that truncated decoded external signatures to 128 bytes
+
+For RSA-2048, RSA-3072, RSA-4096, or other large external signatures, use PoDoFo 0.0.16 or newer.
+
 ## Signature verification returns `CouldNotVerify`
 
 Common causes:

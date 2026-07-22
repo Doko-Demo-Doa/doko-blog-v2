@@ -217,9 +217,57 @@ interface SignPdfOptions {
   conformanceLevel: 'B-B' | 'B-T' | 'B-LT' | 'B-LTA';
   hashAlgorithm?: 'SHA256' | 'SHA384' | 'SHA512';
   rootCertificate?: string;
+  visibleTextSignature?: PdfVisibleTextSignatureOptions;
+  visibleImageSignature?: PdfVisibleImageSignatureOptions;
   validationData?: ValidationData;
 }
 ```
+
+Visible text signatures:
+
+```ts
+interface PdfVisibleTextSignatureOptions {
+  pageIndex: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  text: string;
+  fontName?: string;
+  signerName?: string;
+  reason?: string;
+  location?: string;
+  contactInfo?: string;
+}
+```
+
+Visible image signatures:
+
+```ts
+type PdfVisibleSignatureImageFit = 'contain' | 'stretch';
+
+interface PdfVisibleSignatureImageOptions {
+  path?: string;
+  base64?: string;
+  bytes?: ArrayBuffer;
+  fit?: PdfVisibleSignatureImageFit;
+}
+
+interface PdfVisibleImageSignatureOptions {
+  pageIndex: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  image: PdfVisibleSignatureImageOptions;
+  signerName?: string;
+  reason?: string;
+  location?: string;
+  contactInfo?: string;
+}
+```
+
+For `PdfVisibleSignatureImageOptions`, pass exactly one image source: `path`, `base64`, or `bytes`.
 
 ## Lower-level signing session
 
