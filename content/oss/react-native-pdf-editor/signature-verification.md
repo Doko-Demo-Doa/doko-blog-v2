@@ -5,7 +5,7 @@ description: Inspect signature fields and verify signed byte ranges.
 
 Signature verification is exposed on `PdfField` for fields whose `fieldType` is `Signature`.
 
-This verification checks whether the signature cryptographically matches the PDF bytes covered by `/ByteRange`. It does **not** validate certificate trust chains, trusted roots, CRLs, OCSP, or legal identity. In other words: it can tell you whether the signed bytes still match the signature, not whether you should trust the signer with your lunch money.
+This verification checks whether the signature cryptographically matches the PDF bytes covered by `/ByteRange`. It does **not** validate certificate trust chains, trusted roots, CRLs, OCSP, or legal identity. In other words, it confirms the signed bytes have not changed, not that the signer should be trusted.
 
 ## Inspect signatures
 

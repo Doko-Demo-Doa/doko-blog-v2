@@ -5,9 +5,9 @@ description: Native PDF editing, rendering, encryption, and PAdES signing for Re
 
 `@doko/react-native-pdf-editor` is a React Native library for creating, editing, rendering, encrypting, and digitally signing PDF files on iOS and Android.
 
-It is built as a **New Architecture-only Nitro Module** and uses a modified [PoDoFo](https://github.com/Doko-Demo-Doa/podofo) fork for the core PDF model. iOS binds directly to the C++ core. Android uses Kotlin bindings over the published `podofo-android` JNI wrapper. The result is an API that feels like React Native, but does the heavy PDF work natively where it belongs. JavaScript is lovely. It should not be asked to chew a 200 MB scanned PDF for breakfast.
+It is built as a **New Architecture-only Nitro Module** and uses a modified [PoDoFo](https://github.com/Doko-Demo-Doa/podofo) fork for the core PDF model. iOS binds directly to the C++ core. Android uses Kotlin bindings over the published `podofo-android` JNI wrapper. The result is an API that feels like React Native, while the heavy PDF work happens natively, where it belongs.
 
-This is not a PDF viewer component. It does not mount a scrollable PDF reader on screen. It is for manipulating PDF files: generating reports, merging documents, filling simple fields, adding annotations, rendering pages to images, protecting files with passwords, and signing with external keys.
+This is not a PDF viewer component; it does not render a scrollable PDF reader on screen. It is for manipulating PDF files: generating reports, merging documents, filling simple fields, adding annotations, rendering pages to images, protecting files with passwords, and signing with external keys.
 
 ## What it can do
 
@@ -34,7 +34,7 @@ This is not a PDF viewer component. It does not mount a scrollable PDF reader on
 - Not a trust-store or certificate-revocation validation framework.
 - Not old-bridge compatible.
 
-For viewing PDFs, pair it with a dedicated PDF viewer. For editing PDFs, this library is the toolbox. The viewer can be the window; this is the wrench drawer.
+For viewing PDFs, pair it with a dedicated PDF viewer; this library is the toolbox for editing them.
 
 ## Package entry points
 

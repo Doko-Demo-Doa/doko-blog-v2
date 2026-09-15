@@ -37,7 +37,7 @@ const page = doc.getPage(0);
 console.log(page.width, page.height, page.index);
 ```
 
-`PdfPage` instances are owned by their document. If you remove or reorder pages, previously obtained page objects for shifted pages may no longer represent what you think they represent. Page handles are useful, but they are not friendship bracelets.
+`PdfPage` instances are owned by their document. If you remove or reorder pages, previously obtained page objects for shifted pages may no longer refer to the page you expect.
 
 ## Add and insert pages
 

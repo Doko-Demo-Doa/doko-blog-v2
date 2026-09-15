@@ -33,7 +33,7 @@ interface PdfPageBitmap {
 }
 ```
 
-Use `bytesPerRow`, not `width * 4`, when indexing into `data`. Native row alignment can be a tiny footnote that becomes a large bug if ignored.
+Use `bytesPerRow`, not `width * 4`, when indexing into `data`. Native row alignment can add padding that naive width-based math misses.
 
 ## Write bitmap to PNG or JPEG
 
@@ -54,7 +54,7 @@ This is the recommended path if you want to share a rendered page or show it thr
 
 ## Why not return PNG directly?
 
-The renderer returns bitmap pixels because that is useful for previews, analysis, and custom pipelines. Image encoding is separate because it is native work too. The library avoids making JavaScript cosplay as an image codec.
+The renderer returns raw bitmap pixels because that is useful for previews, analysis, and custom pipelines. Image encoding is a separate step because it is also native work.
 
 ## Text extraction
 

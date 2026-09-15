@@ -49,7 +49,7 @@ const bitmap = await PdfRenderer.renderPageToBitmap({ path, pageIndex: 0 });
 
 ## Text appears at the wrong vertical position
 
-PDF coordinates start at the bottom-left. React Native layout coordinates start at the top-left. Your y-axis is upside down, not your destiny.
+PDF coordinates start at the bottom-left. React Native layout coordinates start at the top-left. Flip the y-axis when converting between the two.
 
 ## Text extraction misses text
 

@@ -81,7 +81,7 @@ output.appendPageRangeFrom(source, 0, 10);
 await output.save('/path/to/first-ten-pages.pdf');
 ```
 
-For very large PDFs, prefer processing smaller batches and saving each output file. PoDoFo is lazy about streams, but it is not a magical streaming splitter. It is good software, not a portal.
+For very large PDFs, prefer processing smaller batches and saving each output file. PoDoFo is lazy about streams, but it is not a streaming splitter.
 
 ## Sign a PDF
 

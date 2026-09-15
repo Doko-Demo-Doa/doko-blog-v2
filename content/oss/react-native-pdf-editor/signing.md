@@ -20,8 +20,6 @@ That means your signer can be backed by:
 - Remote signing service
 - Software key for development and tests
 
-The PDF library is the document chef. Your key is the locked spice cabinet.
-
 ## Basic signing
 
 ```ts

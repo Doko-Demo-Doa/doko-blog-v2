@@ -83,7 +83,7 @@ const painter = page.createPainter();
 const font = doc.getStandard14Font('Helvetica');
 
 painter.setFont(font, 24);
-painter.drawText('It works. The PDF has entered the chat.', 50, 700);
+painter.drawText('Hello from react-native-pdf-editor!', 50, 700);
 painter.finishDrawing();
 
 await doc.save('/path/to/output.pdf');
