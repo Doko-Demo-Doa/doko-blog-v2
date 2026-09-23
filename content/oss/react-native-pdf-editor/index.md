@@ -3,29 +3,29 @@ title: What is this?
 description: Native PDF editing, rendering, encryption, and PAdES signing for React Native.
 ---
 
-`@doko/react-native-pdf-editor` is a React Native library for creating, editing, rendering, encrypting, and digitally signing PDF files on iOS and Android.
+`@doko/react-native-pdf-editor` is a React Native library for creating, editing, rendering, encrypting, and digitally signing PDF files on iOS and Android. Built with Nitro Modules, New Architecture only.
 
-It is built as a **New Architecture-only Nitro Module** and uses a modified [PoDoFo](https://github.com/Doko-Demo-Doa/podofo) fork for the core PDF model. iOS binds directly to the C++ core. Android uses Kotlin bindings over the published `podofo-android` JNI wrapper. The result is an API that feels like React Native, while the heavy PDF work happens natively, where it belongs.
+It's built on top of my fork of [PoDoFo](https://github.com/Doko-Demo-Doa/podofo), a C++ 17 PDF manipulation library. PDF is processed in C++ side for best performance while keeping it cross-platform.
 
-This is not a PDF viewer component; it does not render a scrollable PDF reader on screen. It is for manipulating PDF files: generating reports, merging documents, filling simple fields, adding annotations, rendering pages to images, protecting files with passwords, and signing with external keys.
+However it's just a PDF processing lib. It doesn't provide PDF view component as there are many great libs out there can do the job better.
 
 ## What it can do
 
-| Area | Supported today |
-|---|---|
-| Documents | Create, open, save, merge, split/copy page ranges |
-| Pages | Add, remove, rotate, resize, reorder |
-| Drawing | Text, images, lines, rectangles, circles, colors, graphics state |
-| Fonts | PDF standard 14 fonts, custom font files, in-memory font buffers |
-| Images | Embed encoded image buffers and draw them on pages |
-| Annotations | Create/read common annotation base data: type, rect, contents |
-| Forms | Text boxes, checkboxes, field inspection |
-| Metadata | Title, author, subject, creator |
-| Encryption | AES-256 encryption, passwords, permissions, encryption inspection |
-| Rendering | Render saved PDF pages to RGBA bitmap, write PNG/JPEG |
-| Text extraction | Extract page text entries, optionally filtered by regex |
-| Signing | Signer-agnostic PAdES B-B, B-T, B-LT, B-LTA |
-| Verification | Check signature byte-range integrity, without trust-chain validation |
+| Area            | Supported today                                                      |
+| --------------- | -------------------------------------------------------------------- |
+| Documents       | Create, open, save, merge, split/copy page ranges                    |
+| Pages           | Add, remove, rotate, resize, reorder                                 |
+| Drawing         | Text, images, lines, rectangles, circles, colors, graphics state     |
+| Fonts           | PDF standard 14 fonts, custom font files, in-memory font buffers     |
+| Images          | Embed encoded image buffers and draw them on pages                   |
+| Annotations     | Create/read common annotation base data: type, rect, contents        |
+| Forms           | Text boxes, checkboxes, field inspection                             |
+| Metadata        | Title, author, subject, creator                                      |
+| Encryption      | AES-256 encryption, passwords, permissions, encryption inspection    |
+| Rendering       | Render saved PDF pages to RGBA bitmap, write PNG/JPEG                |
+| Text extraction | Extract page text entries, optionally filtered by regex              |
+| Signing         | Signer-agnostic PAdES B-B, B-T, B-LT, B-LTA                          |
+| Verification    | Check signature byte-range integrity, without trust-chain validation |
 
 ## What it is not
 
@@ -39,8 +39,8 @@ For viewing PDFs, pair it with a dedicated PDF viewer; this library is the toolb
 ## Package entry points
 
 ```ts
-import { PdfDocument, PdfRenderer } from '@doko/react-native-pdf-editor';
-import { signPdf, createSigner } from '@doko/react-native-pdf-editor/signing';
+import { PdfDocument, PdfRenderer } from "@doko/react-native-pdf-editor";
+import { signPdf, createSigner } from "@doko/react-native-pdf-editor/signing";
 ```
 
 Signing is intentionally exposed from a separate `/signing` entry point so apps that only edit or render PDFs do not need to import the signing helpers and types.
@@ -62,7 +62,7 @@ Signing is intentionally exposed from a separate `/signing` entry point so apps 
 
 ## Status
 
-The library is still alpha. The API is already useful, but some parts may change while the public shape is refined and Android/iOS parity continues to improve.
+The library is still alpha. I try to minimize the API changes and, ideally, make the API set stable at v1.0.0.
 
 ## Links
 

@@ -42,14 +42,14 @@ android {
 }
 ```
 
-The Android package pulls the published `io.github.doko-demo-doa:podofo-android` artifact.
+The Android package pulls the published `io.github.doko-demo-doa:podofo-android` artifact. The size is quite big as it includes binaries for all 4 architectures. But optimized APK will have them stripped down.
 
 ## Expo apps
 
 This is a native module, so Expo Go is not enough. Use a development build:
 
 ```bash
-npx expo prebuild
+npx expo prebuild --clean
 npx expo run:ios
 npx expo run:android
 ```
@@ -61,13 +61,13 @@ For Android, set `android.minSdkVersion` to 26 through `expo-build-properties` i
 Editing, rendering, encryption, metadata, fields, annotations:
 
 ```ts
-import { PdfDocument, PdfRenderer } from '@doko/react-native-pdf-editor';
+import { PdfDocument, PdfRenderer } from "@doko/react-native-pdf-editor";
 ```
 
 Signing helpers:
 
 ```ts
-import { signPdf, createSigner } from '@doko/react-native-pdf-editor/signing';
+import { signPdf, createSigner } from "@doko/react-native-pdf-editor/signing";
 ```
 
 ## Verify installation
@@ -75,16 +75,16 @@ import { signPdf, createSigner } from '@doko/react-native-pdf-editor/signing';
 Create and save one PDF:
 
 ```ts
-import { PdfDocument } from '@doko/react-native-pdf-editor';
+import { PdfDocument } from "@doko/react-native-pdf-editor";
 
 const doc = PdfDocument.create();
 const page = doc.createPage(612, 792);
 const painter = page.createPainter();
-const font = doc.getStandard14Font('Helvetica');
+const font = doc.getStandard14Font("Helvetica");
 
 painter.setFont(font, 24);
-painter.drawText('Hello from react-native-pdf-editor!', 50, 700);
+painter.drawText("Hello from react-native-pdf-editor!", 50, 700);
 painter.finishDrawing();
 
-await doc.save('/path/to/output.pdf');
+await doc.save("/path/to/output.pdf");
 ```
