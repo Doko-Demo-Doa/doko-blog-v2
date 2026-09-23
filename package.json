@@ -10,26 +10,26 @@
     "lint": "biome check --write src/"
   },
   "dependencies": {
-    "@icons-pack/react-simple-icons": "^13.13.0",
-    "fumadocs-core": "16.9.1",
-    "fumadocs-mdx": "15.0.8",
-    "fumadocs-typescript": "^4.0.13",
-    "fumadocs-ui": "16.9.1",
-    "lucide-react": "^1.16.0",
-    "next": "16.2.6",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "@icons-pack/react-simple-icons": "^13.15.1",
+    "fumadocs-core": "16.15.13",
+    "fumadocs-mdx": "15.4.3",
+    "fumadocs-typescript": "^5.4.1",
+    "fumadocs-ui": "16.15.13",
+    "lucide-react": "^1.47.0",
+    "next": "16.3.6",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.15",
+    "@biomejs/biome": "2.5.14",
     "@flydotio/dockerfile": "^0.7.10",
-    "@tailwindcss/postcss": "^4.3.0",
-    "@types/mdx": "^2.0.13",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/mdx": "^2.0.14",
     "@types/node": "24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "postcss": "^8.5.14",
-    "tailwindcss": "^4.3.0",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3"
   },
   "overrides": {
@@ -50,5 +50,8 @@
   "bugs": {
     "url": "https://github.com/Doko-Demo-Doa/doko-blog-v2/issues"
   },
-  "homepage": "https://github.com/Doko-Demo-Doa/doko-blog-v2#readme"
+  "homepage": "https://github.com/Doko-Demo-Doa/doko-blog-v2#readme",
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
 }
